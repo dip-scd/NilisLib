@@ -1,9 +1,8 @@
-package org.nilis.nilismath;
+package org.nilis.nilismath.essentials;
 
 import java.util.Date;
 import java.util.Random;
 
-import org.nilis.nilismath.essentials.Mutator;
 
 
 public class NumericMutator extends Mutator<Double> {

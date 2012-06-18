@@ -1,6 +1,7 @@
 package org.nilis.nilismath;
 
-import org.nilis.nilismath.essentials.Mutator;
+import org.nilis.nilismath.essentials.HomogenicFunctor;
+import org.nilis.nilismath.essentials.LinearMutatingNumericFunctor;
 
 
 public class Spawnlings {
@@ -11,10 +12,9 @@ public class Spawnlings {
 	}
 	
 	public static void main(String[] args) {
-		Mutator<Double> mutator = new NumericMutator(10);
+		HomogenicFunctor<Double> functor = new LinearMutatingNumericFunctor(10);
 		for(int i=0; i<40; i++) {
-			out(mutator.mutate((double) 20));
+			out(functor.perform((double) 20));
 		}
 	}
-
 }
