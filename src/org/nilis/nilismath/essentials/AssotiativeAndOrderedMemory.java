@@ -88,6 +88,7 @@ public class AssotiativeAndOrderedMemory<TData extends Object> implements SelfKe
 	@Override
 	public void remember(TData value) {
 		GraphNode<TData> node = nodeCriteria.getMatchingNode(value, nodesSet);
+		node.setValue(value);
 		nodesSet.add(node);
 		nodeCriteria.setupNodeLinks(node, nodesSet);
 		nodesMap.put(value, node);
@@ -103,6 +104,10 @@ public class AssotiativeAndOrderedMemory<TData extends Object> implements SelfKe
 			return nodesMap.get(key).getValue();
 		}
 		return null;
+	}
+	
+	public TData getAssociated(TData key) {
+		return nodeCriteria.getMatchingExistingNode(key, nodesSet).getValue();
 	}
 	
 	@Override

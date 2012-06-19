@@ -69,7 +69,6 @@ public class BasicNodeCriteria<TData> extends NodeCriteria<TData> {
 			Set<GraphNode<TData>> existingNodes, double minimalSimilarity) {
 		DataPair<GraphNode<TData>, Double> mostSimilar = findMostSimilarNode(data, existingNodes);
 		if(mostSimilar != null && mostSimilar.getData().doubleValue() >= minimalSimilarity) {
-			mostSimilar.getTag().setValue(data);
 			return mostSimilar.getTag();
 		}
 		return null;
