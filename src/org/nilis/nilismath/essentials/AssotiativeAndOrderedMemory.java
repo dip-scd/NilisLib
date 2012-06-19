@@ -3,6 +3,8 @@ package org.nilis.nilismath.essentials;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Set;
 import java.util.Map.Entry;
 
@@ -59,6 +61,10 @@ public class AssotiativeAndOrderedMemory<TData, TKey> implements Memory<TData, T
 		nodesSet.add(node);
 		nodeCriteria.setupNodeLinks(node, nodesSet);
 		nodesMap.put(key, node);
+		if(nodesMap.size() > nodesSet.size()) {
+			List<TKey> keys = new LinkedList<TKey>(nodesMap.keySet());
+			nodesMap.remove(keys.get(0));
+		}
 	}
 
 	@Override

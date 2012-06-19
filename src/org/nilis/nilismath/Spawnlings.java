@@ -29,6 +29,7 @@ public class Spawnlings {
 		}));
 		for(int i=0; i<40; i++) {
 			double val = Math.random() * 500;
+			out(val);
 			testMemory.remember(val, val);
 			//out(functor.perform((double) 20));
 		}
