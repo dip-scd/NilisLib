@@ -7,7 +7,7 @@ import org.nilis.nilismath.essentials.AssotiativeAndOrderedMemory.NodeCriteria;
 import org.nilis.utils.data.DataPair;
 
 
-public class BasicNodeCriteria<TData> implements NodeCriteria<TData> {
+public class BasicNodeCriteria<TData> extends NodeCriteria<TData> {
 	
 	public static interface DataSimilarityCriteria<TData> {
 		double howSimilar(TData data1, TData data2);
@@ -28,10 +28,9 @@ public class BasicNodeCriteria<TData> implements NodeCriteria<TData> {
 	@Override
 	public GraphNode<TData> getMatchingNode(TData data,
 			Set<GraphNode<TData>> existingNodes) {
-		DataPair<GraphNode<TData>, Double> mostSimilar = findMostSimilarNode(data, existingNodes);
-		if(mostSimilar != null && mostSimilar.getData().doubleValue() >= minimalSimilarityForUsingExistingNode) {
-			mostSimilar.getTag().setValue(data);
-			return mostSimilar.getTag();
+		GraphNode<TData> mostSimilar = getMatchingExistingNode(data, existingNodes, minimalSimilarityForUsingExistingNode);
+		if(mostSimilar != null) {
+			return mostSimilar;
 		}
 		return new GraphNode<TData>(data);
 	}
@@ -61,6 +60,17 @@ public class BasicNodeCriteria<TData> implements NodeCriteria<TData> {
 		}
 		if(mostSimilar != null) {
 			return new DataPair<GraphNode<TData>, Double>(mostSimilar, Double.valueOf(maxSimilarity));
+		}
+		return null;
+	}
+
+	@Override
+	public GraphNode<TData> getMatchingExistingNode(TData data,
+			Set<GraphNode<TData>> existingNodes, double minimalSimilarity) {
+		DataPair<GraphNode<TData>, Double> mostSimilar = findMostSimilarNode(data, existingNodes);
+		if(mostSimilar != null && mostSimilar.getData().doubleValue() >= minimalSimilarity) {
+			mostSimilar.getTag().setValue(data);
+			return mostSimilar.getTag();
 		}
 		return null;
 	}

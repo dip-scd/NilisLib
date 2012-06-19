@@ -2,11 +2,9 @@ package org.nilis.nilismath;
 
 import org.nilis.nilismath.BasicNodeCriteria.DataSimilarityCriteria;
 import org.nilis.nilismath.essentials.AssotiativeAndOrderedMemory;
-import org.nilis.nilismath.essentials.Memory;
-
+import org.nilis.nilismath.essentials.SelfKeyedMemory;
 
 public class Spawnlings {
-
 
 	public static void out(Object message) {
 		System.out.println(message);
@@ -14,7 +12,7 @@ public class Spawnlings {
 	
 	public static void main(String[] args) {
 		//HomogenicFunctor<Double> functor = new LinearMutatingNumericFunctor(10);
-		Memory<Double, Double> testMemory = new AssotiativeAndOrderedMemory<Double, Double>(
+		SelfKeyedMemory<Double> testMemory = new AssotiativeAndOrderedMemory<Double>(
 				new BasicNodeCriteria<Double>(
 						new DataSimilarityCriteria<Double>() {
 
@@ -27,10 +25,10 @@ public class Spawnlings {
 				return 0;
 			}
 		}));
-		for(int i=0; i<40; i++) {
+		for(int i=0; i<400; i++) {
 			double val = Math.random() * 500;
-			out(val);
-			testMemory.remember(val, val);
+			//out(val);
+			testMemory.remember(val);
 			//out(functor.perform((double) 20));
 		}
 		out(testMemory);
