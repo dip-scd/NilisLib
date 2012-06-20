@@ -21,5 +21,4 @@ public class VariableWithMemory<TData> implements Variable<TData> {
 	public TData get() {
 		return memory.getAssociated(lastValue);
 	}
-
 }

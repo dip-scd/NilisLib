@@ -92,7 +92,8 @@ public class AssotiativeAndOrderedMemory<TData extends Object> implements Associ
 	@Override
 	public void remember(TData value) {
 		GraphNode<TData> node = nodeCriteria.getMatchingNode(value, nodesSet);
-		node.setValue(value);
+		node.setValue(value); //I think best solution will be some average value between old and new. 
+									 //But not all data types can easily define 'average'
 		nodesSet.add(node);
 		nodeCriteria.setupNodeLinks(node, nodesSet);
 		nodesMap.put(value, node);

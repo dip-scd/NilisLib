@@ -42,26 +42,21 @@ public class Spawnlings {
 	}
 	
 	public static void main(String[] args) {
-		//HomogenicFunctor<Double> functor = new LinearMutatingNumericFunctor(10);
 		AssotiativeAndOrderedMemory<Double> testMemory = new AssotiativeAndOrderedMemory<Double>(
 				new BasicNodeCriteria<Double>(
-						new NumbersSimilarityCriteria(100)
+						new NumbersSimilarityCriteria(1000)
 					)
 		);
-		for(int i=0; i<40; i++) {
+		VariableWithMemory<Double> var = new VariableWithMemory<Double>(testMemory);
+		for(int i=0; i<400; i++) {
 			double val = Math.random() * 500;
-			testMemory.remember(val);
+			var.set(val);
+			out(": "+val+", : "+var.get());
+			//testMemory.remember(val);
 		}
-		out(testMemory);
-//		Object a = new Object();
-//		Object b = new Object();
-//		out(a.hashCode());
-//		out(b.hashCode());
-//		out(a.equals(b));
-//		
-//		out(new A());
-//		out(((JFrame)new A()).toString());
-
+		//out(testMemory);
+		StringsSimilarityCriteria ssc = new StringsSimilarityCriteria();
+		out(ssc.howSimilar("abc", "dcd"));
 //		Graph<GraphNode<Double>,  GraphNode<Double>> graph = new SparseGraph<GraphNode<Double>,  GraphNode<Double>>();
 //		for(GraphNode<Double> node : testMemory.getNodes()) {
 //			graph.addVertex(node);
