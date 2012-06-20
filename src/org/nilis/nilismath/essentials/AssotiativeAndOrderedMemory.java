@@ -84,6 +84,10 @@ public class AssotiativeAndOrderedMemory<TData extends Object> implements SelfKe
 //		nodesSet.add(node);
 //		nodesMap.put(key, node);
 	}
+	
+	public Set<GraphNode<TData>> getNodes() {
+		return nodesSet;
+	}
 
 	@Override
 	public void remember(TData value) {
