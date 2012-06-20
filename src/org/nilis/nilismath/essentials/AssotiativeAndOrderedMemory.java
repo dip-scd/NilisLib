@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.Map.Entry;
 import java.util.Set;
 
-public class AssotiativeAndOrderedMemory<TData extends Object> implements SelfKeyedMemory<TData> {
+public class AssotiativeAndOrderedMemory<TData extends Object> implements AssociativeSelfKeyedMemory<TData> {
 	
 	public static class GraphNode<TData> {
 		protected HashMap<GraphNode<TData>, Double> linkedNodes = new HashMap<GraphNode<TData>, Double>();
@@ -110,6 +110,7 @@ public class AssotiativeAndOrderedMemory<TData extends Object> implements SelfKe
 		return null;
 	}
 	
+	@Override
 	public TData getAssociated(TData key) {
 		return nodeCriteria.getMatchingExistingNode(key, nodesSet).getValue();
 	}

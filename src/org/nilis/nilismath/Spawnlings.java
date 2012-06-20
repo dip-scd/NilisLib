@@ -18,6 +18,7 @@ import edu.uci.ics.jung.algorithms.layout.Layout;
 import edu.uci.ics.jung.graph.DirectedSparseGraph;
 import edu.uci.ics.jung.graph.Graph;
 import edu.uci.ics.jung.graph.SparseGraph;
+import edu.uci.ics.jung.graph.util.Context;
 import edu.uci.ics.jung.visualization.VisualizationViewer;
 import edu.uci.ics.jung.visualization.renderers.BasicRenderer;
 import edu.uci.ics.jung.visualization.renderers.BasicVertexLabelRenderer;
@@ -29,58 +30,64 @@ public class Spawnlings {
 		System.out.println(message);
 	}
 	
+	public static class A extends JFrame {
+		public String f() {
+			return toString();
+		}
+		
+		@Override
+		public String toString() {
+			return "FUCK "+getClass().getCanonicalName();
+		}
+	}
+	
 	public static void main(String[] args) {
 		//HomogenicFunctor<Double> functor = new LinearMutatingNumericFunctor(10);
 		AssotiativeAndOrderedMemory<Double> testMemory = new AssotiativeAndOrderedMemory<Double>(
 				new BasicNodeCriteria<Double>(
-						new DataSimilarityCriteria<Double>() {
-
-			@Override
-			public double howSimilar(Double data1, Double data2) {
-				double diff = Math.abs(data1.doubleValue() - data2.doubleValue());
-				if(diff <= 100) {
-					return 1 - diff/100.0;
-				}
-				return 0;
-			}
-		}));
+						new NumbersSimilarityCriteria(100)
+					)
+		);
 		for(int i=0; i<40; i++) {
 			double val = Math.random() * 500;
 			testMemory.remember(val);
 		}
 		out(testMemory);
-		
-//		for(int i=0; i<40; i++) {
-//			double val = Math.random() * 500;
-//			out("key: "+val+", returned value: "+testMemory.getAssociated(val));
+//		Object a = new Object();
+//		Object b = new Object();
+//		out(a.hashCode());
+//		out(b.hashCode());
+//		out(a.equals(b));
+//		
+//		out(new A());
+//		out(((JFrame)new A()).toString());
+
+//		Graph<GraphNode<Double>,  GraphNode<Double>> graph = new SparseGraph<GraphNode<Double>,  GraphNode<Double>>();
+//		for(GraphNode<Double> node : testMemory.getNodes()) {
+//			graph.addVertex(node);
+//			for(GraphNode<Double> linkedNode : node.getLinkedNodes().keySet()) {
+//				Set<GraphNode<Double>> edge = new HashSet<GraphNode<Double>>();
+//				edge.add(node);
+//				edge.add(linkedNode);
+//				try {
+//					graph.addEdge(node, edge);
+//				} catch(Exception e) {
+//					
+//				}
+//			}
 //		}
-		
-		Graph<GraphNode<Double>,  GraphNode<Double>> graph = new SparseGraph<GraphNode<Double>,  GraphNode<Double>>();
-		for(GraphNode<Double> node : testMemory.getNodes()) {
-			graph.addVertex(node);
-			for(GraphNode<Double> linkedNode : node.getLinkedNodes().keySet()) {
-				Set<GraphNode<Double>> edge = new HashSet<GraphNode<Double>>();
-				edge.add(node);
-				edge.add(linkedNode);
-				try {
-					graph.addEdge(node, edge);
-				} catch(Exception e) {
-					
-				}
-			}
-		}
-		Layout<GraphNode<Double>, GraphNode<Double>> l = new FRLayout<GraphNode<Double>, GraphNode<Double>>( graph );
-		Renderer<GraphNode<Double>, GraphNode<Double>> renderer = new BasicRenderer<GraphNode<Double>, GraphNode<Double>>();
-		BasicVertexLabelRenderer<GraphNode<Double>, GraphNode<Double>> bvlr = new BasicVertexLabelRenderer<GraphNode<Double>, GraphNode<Double>>();
-		renderer.setVertexLabelRenderer(bvlr);
-		VisualizationViewer<GraphNode<Double>, GraphNode<Double>> vv = new VisualizationViewer<GraphNode<Double>, GraphNode<Double>>(l);
-		vv.setRenderer(renderer);
-		JFrame jf = new JFrame();
-		LayoutManager la = new BorderLayout();
-		jf.setLayout(la);
-		jf.setSize(400, 400);
-		jf.getContentPane().add ( vv );
-		jf.setSize(vv.getSize());
-		jf.setVisible(true);
+//		Layout<GraphNode<Double>, GraphNode<Double>> l = new FRLayout<GraphNode<Double>, GraphNode<Double>>( graph );
+//		Renderer<GraphNode<Double>, GraphNode<Double>> renderer = new BasicRenderer<GraphNode<Double>, GraphNode<Double>>();
+//		BasicVertexLabelRenderer<GraphNode<Double>, GraphNode<Double>> bvlr = new BasicVertexLabelRenderer<GraphNode<Double>, GraphNode<Double>>();
+//		renderer.setVertexLabelRenderer(bvlr);
+//		VisualizationViewer<GraphNode<Double>, GraphNode<Double>> vv = new VisualizationViewer<GraphNode<Double>, GraphNode<Double>>(l);
+//		vv.setRenderer(renderer);
+//		JFrame jf = new JFrame();
+//		LayoutManager la = new BorderLayout();
+//		jf.setLayout(la);
+//		jf.setSize(400, 400);
+//		jf.getContentPane().add ( vv );
+//		jf.setSize(vv.getSize());
+//		jf.setVisible(true);
 	}
 }
