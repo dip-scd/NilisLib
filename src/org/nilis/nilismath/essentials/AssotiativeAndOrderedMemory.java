@@ -42,6 +42,11 @@ public class AssotiativeAndOrderedMemory<TData extends Object> implements Associ
 		}
 		
 		@Override
+		public String toString() {
+			return value.toString();
+		}
+		
+		@Override
 		public int hashCode() {
 			return value.hashCode();
 		}
