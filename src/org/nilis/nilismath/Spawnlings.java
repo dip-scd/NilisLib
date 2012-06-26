@@ -108,34 +108,34 @@ public class Spawnlings {
 			}
 		}
 		StringCollectionAtomFinder scaf = new StringCollectionAtomFinder();
-		scaf.findAtoms(new HashSet<String>(Arrays.asList(words)));
+		scaf.putWords(new HashSet<String>(Arrays.asList(words)));
 		out(inputString);
 		out("\n ===================== \n");
 		out(newText);
-//		Graph<String,  GraphNode<String>> graph = new SparseGraph<String,  GraphNode<String>>();
-//		for(GraphNode<String> node : testMemory.getNodes()) {
-//			graph.addVertex(node.toString());
-//			for(GraphNode<String> linkedNode : node.getLinkedNodes().keySet()) {
-//				Set<String> edge = new HashSet<String>();
-//				edge.add(node.toString());
-//				edge.add(linkedNode.toString());
-//				try {
-//					graph.addEdge(node, edge);
-//				} catch(Exception e) {
-//					
-//				}
-//			}
-//		}
-//		Layout<String, GraphNode<String>> l = new FRLayout2<String, GraphNode<String>>(graph);
-//		VisualizationViewer<String, GraphNode<String>> vv = new VisualizationViewer<String, GraphNode<String>>(l);
-//		vv.getRenderContext().setVertexLabelTransformer(new ToStringLabeller<String>());
-//		vv.setSize(800,800);
-//		JFrame jf = new JFrame();
-//		LayoutManager la = new BorderLayout();
-//		jf.setLayout(la);
-//		jf.setSize(800, 800);
-//		jf.getContentPane().add ( vv );
-//		jf.setSize(vv.getSize());
-//		jf.setVisible(true);
+		Graph<String,  GraphNode<String>> graph = new SparseGraph<String,  GraphNode<String>>();
+		for(GraphNode<String> node : testMemory.getNodes()) {
+			graph.addVertex(node.toString());
+			for(GraphNode<String> linkedNode : node.getLinkedNodes().keySet()) {
+				Set<String> edge = new HashSet<String>();
+				edge.add(node.toString());
+				edge.add(linkedNode.toString());
+				try {
+					graph.addEdge(node, edge);
+				} catch(Exception e) {
+					
+				}
+			}
+		}
+		Layout<String, GraphNode<String>> l = new FRLayout2<String, GraphNode<String>>(graph);
+		VisualizationViewer<String, GraphNode<String>> vv = new VisualizationViewer<String, GraphNode<String>>(l);
+		vv.getRenderContext().setVertexLabelTransformer(new ToStringLabeller<String>());
+		vv.setSize(800,800);
+		JFrame jf = new JFrame();
+		LayoutManager la = new BorderLayout();
+		jf.setLayout(la);
+		jf.setSize(800, 800);
+		jf.getContentPane().add ( vv );
+		jf.setSize(vv.getSize());
+		jf.setVisible(true);
 	}
 }

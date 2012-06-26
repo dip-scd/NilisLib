@@ -11,7 +11,7 @@ import java.util.Set;
 public class AssotiativeAndOrderedMemory<TData extends Object> implements AssociativeSelfKeyedMemory<TData> {
 	
 	public static class GraphNode<TData> {
-		protected HashMap<GraphNode<TData>, Double> linkedNodes = new HashMap<GraphNode<TData>, Double>();
+		protected HashMap<GraphNode<TData>, Double> linkedNodes = new LinkedHashMap<GraphNode<TData>, Double>();
 		protected TData value;
 		
 		public GraphNode(TData value) {
