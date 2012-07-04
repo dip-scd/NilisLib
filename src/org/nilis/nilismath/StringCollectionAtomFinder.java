@@ -9,8 +9,8 @@ import org.nilis.nilismath.essentials.AssotiativeAndOrderedMemory.GraphNode;
 
 public class StringCollectionAtomFinder{
 	
-	protected Set<GraphNode<String>> nodes;
-	protected HashMap<String, GraphNode<String>> outputNodesMapping;
+	protected Set<GraphNode<String>> nodes = new HashSet<GraphNode<String>>();
+	protected HashMap<String, GraphNode<String>> outputNodesMapping = new HashMap<String, GraphNode<String>>();
 
 	public void putWords(Set<String> input) {
 		for(String word : input) {
@@ -18,7 +18,11 @@ public class StringCollectionAtomFinder{
 		}
 	}
 
-	public void putWord(String word) {
+	public void putWord(String wordInput) {
+		if(wordInput == null || wordInput.length() == 0 || wordInput.equals("")) {
+			return;
+		}
+		String word = wordInput.toLowerCase();
 		GraphNode<String> wordContainingNode = null;
 		if(outputNodesMapping.containsKey(word)) {
 			wordContainingNode = outputNodesMapping.get(word);
@@ -32,15 +36,26 @@ public class StringCollectionAtomFinder{
 	
 	protected void relinkHiddenNodes(GraphNode<String> addedNode) {
 		findNodesWithValuesContainedByProvidedNode(addedNode);
+		findNodesWithValuesContainingProvidedNodeValue(addedNode);
 	}
 	
-	protected Set<GraphNode<String>> findNodesWithValuesContainedByProvidedNode(GraphNode<String> providedNode) {
-		Set<GraphNode<String>> ret = new HashSet<GraphNode<String>>();
+	protected void findNodesWithValuesContainedByProvidedNode(GraphNode<String> providedNode) {
 		for(GraphNode<String> node : nodes) {
-			if(providedNode.getValue().contains(node.getValue())) {
-				ret.add(node);
+			if(!providedNode.equals(node) && providedNode.getValue().contains(node.getValue())) {
+				node.setLink(providedNode, 1);
 			}
 		}
-		return ret;
+	}
+	
+	protected void findNodesWithValuesContainingProvidedNodeValue(GraphNode<String> providedNode) {
+		for(GraphNode<String> node : nodes) {
+			if(!providedNode.equals(node) && node.getValue().contains(providedNode.getValue())) {
+				providedNode.setLink(node, 1);
+			}
+		}
+	}
+	
+	public Set<GraphNode<String>> getNodes() {
+		return nodes;
 	}
 }
