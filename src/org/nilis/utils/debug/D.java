@@ -160,7 +160,7 @@ public class D {
 		}
 
 		final int remoteSeverity = logSeverityToRemoteSeverity(severity);
-		final String[][] dict = { { "time", TimeUtils.getCurrentTimestampString() }, { "message", message.replaceAll("\n", "<br>") },
+		final String[][] dict = { { "time", TimeUtils.getCurrentLongTimestampString() }, { "message", message.replaceAll("\n", "<br>") },
 				{ "device", deviceName }, { "app", appName }, { "device_id", deviceId },
 				{ "severity", String.valueOf(remoteSeverity) } };
 		stringPoster.post(LOG_URL, StringPoster.mapToString(dict), dataListener);
