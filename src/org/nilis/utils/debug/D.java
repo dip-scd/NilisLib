@@ -160,7 +160,7 @@ public class D {
 		}
 
 		final int remoteSeverity = logSeverityToRemoteSeverity(severity);
-		final String[][] dict = { { "time", TimeUtils.getCurrentTimestampString() }, { "message", message },
+		final String[][] dict = { { "time", TimeUtils.getCurrentTimestampString() }, { "message", message.replaceAll("\n", "<br>") },
 				{ "device", deviceName }, { "app", appName }, { "device_id", deviceId },
 				{ "severity", String.valueOf(remoteSeverity) } };
 		stringPoster.post(LOG_URL, StringPoster.mapToString(dict), dataListener);
@@ -203,12 +203,12 @@ public class D {
 	}
 	
 	public static void logCurrentStackTrace(String customMessage) {
-			String logString = customMessage+"\n"+getStackTrace();
+			String logString = customMessage+""+getStackTrace();
 			log(Log.DEBUG, logString);
 	}
 	
 	public static void logCurrentStackTrace() {
-		String logString = "\n"+getStackTrace(); //if you'll call logCurrentStackTrace(String customMessage)
+		String logString = ""+getStackTrace(); //if you'll call logCurrentStackTrace(String customMessage)
 												 //instead this code, extra stack trace element will be displayed
 												 //see getStackTrace(). So small duplicating left for a while
 		log(Log.DEBUG, logString);
