@@ -81,6 +81,18 @@ public class D {
 		D.remoteLog = true;
 		D.i("Remote logging started");
 	}
+	
+	public static void enableRemoteLogging(String appName, String deviceId) {
+		if(D.appName==null) {
+			D.appName = appName;
+		}
+
+		D.deviceId = deviceId;
+		D.deviceName = D.deviceId;
+
+		D.remoteLog = true;
+		D.i("Remote logging started");
+	}
 
 	public static void disableRemoteLogging() {
 		D.remoteLog = false;
@@ -252,25 +264,29 @@ public class D {
 		
 		message = callPoint + " " + message;
 
+		try {
 		switch (type) {
-		case Log.ERROR:
-			Log.e(caller, message);
-			break;
-		case Log.INFO:
-			Log.i(caller, message);
-			break;
-		case Log.VERBOSE:
-			Log.v(caller, message);
-			break;
-		case Log.DEBUG:
-			Log.d(caller, message);
-			break;
-		case Log.WARN:
-			Log.w(caller, message);
-			break;
-		default:
-			Log.i(caller, message);
-			break;
+			case Log.ERROR:
+				Log.e(caller, message);
+				break;
+			case Log.INFO:
+				Log.i(caller, message);
+				break;
+			case Log.VERBOSE:
+				Log.v(caller, message);
+				break;
+			case Log.DEBUG:
+				Log.d(caller, message);
+				break;
+			case Log.WARN:
+				Log.w(caller, message);
+				break;
+			default:
+				Log.i(caller, message);
+				break;
+			}
+		} catch(Exception e) {
+			
 		}
 
 		if (remoteLog) {

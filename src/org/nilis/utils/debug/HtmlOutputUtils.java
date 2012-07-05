@@ -2,6 +2,9 @@ package org.nilis.utils.debug;
 
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
+
+import org.nilis.utils.data.DataPair;
 
 
 public class HtmlOutputUtils {
@@ -42,5 +45,51 @@ public class HtmlOutputUtils {
 	
 	public static String smallImage(String imageUrl) {
 		return "<br><img style='width: 160px' src='"+imageUrl+"' ></img>";
+	}
+	
+	private static String parametrizedGraph(Set<DataPair<String, String>> edges, Set<String> standaloneNodes, int type) {
+		String graphTypeString = "graph";
+		if(type != 0) {
+			graphTypeString = "digraph";
+		}
+		String ret = "<br><img src='http://chart.googleapis.com/chart?cht=gv&chl="+graphTypeString+"{";
+		int count = 0;
+		int size = edges.size();
+		if(edges != null) {
+			for(DataPair<String, String> edge : edges) {
+				ret+=edge.getTag().replaceAll("\\W", "_");
+				if(type == 0) {
+					ret+="--";
+				} else {
+					ret+="->";
+				}
+				ret+=edge.getData().replaceAll("\\W", "_");
+				count++;
+				if(count < size) {
+					ret+=",";
+				}
+			}
+		}
+		if(standaloneNodes != null) {
+			count = 0;
+			size = standaloneNodes.size();
+			for(String node : standaloneNodes) {
+				ret+=node;
+				count++;
+				if(count < size) {
+					ret+=",";
+				}
+			}
+		}
+		ret +="}' />";
+		return ret;
+	}
+	
+	public static String graph(Set<DataPair<String, String>> edges, Set<String> standaloneNodes) {
+		return parametrizedGraph(edges, standaloneNodes, 0);
+	}
+	
+	public static String directedGraph(Set<DataPair<String, String>> edges, Set<String> standaloneNodes) {
+		return parametrizedGraph(edges, standaloneNodes, 1);
 	}
 }
