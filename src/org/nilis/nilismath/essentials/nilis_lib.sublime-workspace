@@ -1,0 +1,568 @@
+{
+	"auto_complete":
+	{
+		"selected_items":
+		[
+		]
+	},
+	"buffers":
+	[
+		{
+			"contents": "package org.nilis.nilismath.essentials;\n\nimport java.util.HashMap;\nimport java.util.HashSet;\nimport java.util.LinkedHashMap;\nimport java.util.LinkedList;\nimport java.util.List;\nimport java.util.Map.Entry;\nimport java.util.Set;\n\npublic class AssotiativeAndOrderedMemory<TData extends Object> implements AssociativeSelfKeyedMemory<TData> {\n	\n	public static class GraphNode<TData> {\n		protected HashMap<GraphNode<TData>, Double> linkedNodes = new LinkedHashMap<GraphNode<TData>, Double>();\n		protected TData value;\n		\n		public GraphNode(TData value) {\n			this.value = value;\n		}\n		\n		public void setValue(TData value) {\n			this.value = value;\n		}\n		public TData getValue() {\n			return this.value;\n		}\n		public void setLink(GraphNode<TData> node, double linkPower) {\n			if(linkPower == 0) {\n				unsetLink(node);\n			} else {\n				linkedNodes.put(node, Double.valueOf(linkPower));\n			}\n		}\n		public void unsetLink(GraphNode<TData> node) {\n			linkedNodes.remove(node);\n		}\n		public boolean hasLinkTo(GraphNode<TData> node) {\n			return linkedNodes.containsKey(node);\n		}\n		public HashMap<GraphNode<TData>, Double> getLinkedNodes() {\n			return linkedNodes;\n		}\n		\n		@Override\n		public String toString() {\n			return value.toString();\n		}\n		\n		@Override\n		public int hashCode() {\n			return value.hashCode();\n		}\n		\n		@SuppressWarnings(\"unchecked\")\n		@Override\n		public boolean equals(Object another) {\n			if(another instanceof GraphNode) {\n				return value.equals(((GraphNode<TData>) another).getValue());\n			}\n			return false;\n		}\n	}\n	\n	public static abstract class NodeCriteria<TData> {\n		abstract public GraphNode<TData> getMatchingNode(TData data, Set<GraphNode<TData>> existingNodes);\n		public GraphNode<TData> getMatchingExistingNode(TData data, Set<GraphNode<TData>> existingNodes) {\n			return getMatchingExistingNode(data, existingNodes, 0);\n		}\n		abstract public GraphNode<TData> getMatchingExistingNode(TData data, Set<GraphNode<TData>> existingNodes, double minimalSimilarity);\n		abstract public void setupNodeLinks(GraphNode<TData> node, Set<GraphNode<TData>> existingNodes);\n	}\n	\n	protected Set<GraphNode<TData>> nodesSet = new HashSet<GraphNode<TData>>();\n	protected LinkedHashMap<TData, GraphNode<TData>> nodesMap = new LinkedHashMap<TData, GraphNode<TData>>();\n	protected NodeCriteria<TData> nodeCriteria;\n	\n	public AssotiativeAndOrderedMemory(NodeCriteria<TData> nodeCriteria) {\n		this.nodeCriteria = nodeCriteria;\n	}\n	\n	protected void setNodeIntoMemory(TData key, TData storedValue) {\n		GraphNode<TData> node = new GraphNode<TData>(storedValue);\n		nodesSet.add(node);\n		nodesMap.put(key, node);\n	}\n	\n	protected void setNodeLinks(TData nodeStoredValue, Set<TData> linkedNodesStoredValues) {\n//		GraphNode<TData> node = new GraphNode<TData>(storedValue);\n//		nodesSet.add(node);\n//		nodesMap.put(key, node);\n	}\n	\n	public Set<GraphNode<TData>> getNodes() {\n		return nodesSet;\n	}\n\n	@Override\n	public void remember(TData value) {\n		GraphNode<TData> node = nodeCriteria.getMatchingNode(value, nodesSet);\n		node.setValue(value); //I think best solution will be some average value between old and new. \n									 //But not all data types can easily define 'average'\n		nodesSet.add(node);\n		nodeCriteria.setupNodeLinks(node, nodesSet);\n		nodesMap.put(value, node);\n		if(nodesMap.size() > nodesSet.size()) {\n			List<TData> keys = new LinkedList<TData>(nodesMap.keySet());\n			nodesMap.remove(keys.get(0));\n		}\n	}\n\n	@Override\n	public TData get(TData key) {\n		if(nodesMap.containsKey(key)) {\n			return nodesMap.get(key).getValue();\n		}\n		return null;\n	}\n	\n	@Override\n	public TData getAssociated(TData key) {\n		return nodeCriteria.getMatchingExistingNode(key, nodesSet).getValue();\n	}\n	\n	@Override\n	public String toString() {\n		StringBuilder sb = new StringBuilder();\n		sb.append(\"{ AssotiativeAndOrderedMemory, size: \"+nodesSet.size()+\" nodes \\n\");\n		int counter = 0;\n		for(Entry<TData, GraphNode<TData>> entry : nodesMap.entrySet()) {\n			sb.append(\"   {\"+counter+++\" Node '\"+entry.getKey()+\"' with value \"+entry.getValue().getValue()+\", linked with nodes with values: \\n\");\n			for(Entry<GraphNode<TData>, Double> nodeEntry : entry.getValue().getLinkedNodes().entrySet()) {\n				sb.append(\"      [ \"+nodeEntry.getKey().getValue()+\", power: \"+nodeEntry.getValue()+\"], \\n\");\n			}\n			sb.append(\"   } \\n\");\n		}\n		sb.append(\"\\n }\");\n		return sb.toString();\n	}\n}\n",
+			"file": "AssotiativeAndOrderedMemory.java",
+			"file_size": 4349,
+			"file_write_time": 1340749249000000,
+			"settings":
+			{
+				"buffer_size": 4349,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "/Users/oleg/Documents/workspace/NilisLibrary/src/org/nilis/nilismath/BasicNodeCriteria.java",
+			"settings":
+			{
+				"buffer_size": 2653,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "/Users/oleg/Documents/workspace/NilisLibrary/src/org/nilis/utils/data/CancellableDataStorage.java",
+			"settings":
+			{
+				"buffer_size": 219,
+				"line_ending": "Unix"
+			}
+		}
+	],
+	"build_system": "Packages/Java/JavaC.sublime-build",
+	"command_palette":
+	{
+		"height": 27.0,
+		"selected_items":
+		[
+			[
+				"insta",
+				"Package Control: Install Package"
+			],
+			[
+				"ja",
+				"Set Syntax: Java"
+			],
+			[
+				"",
+				"ADB: Set Regex filter"
+			],
+			[
+				"adb",
+				"Set Syntax: Android Debug Bridge"
+			],
+			[
+				"inst",
+				"Package Control: Install Package"
+			],
+			[
+				"ins",
+				"Package Control: Install Package"
+			],
+			[
+				"packa",
+				"Preferences: Browse Packages"
+			],
+			[
+				"bu",
+				"Build: Build"
+			]
+		],
+		"width": 602.0
+	},
+	"console":
+	{
+		"height": 125.0
+	},
+	"distraction_free":
+	{
+		"menu_visible": true,
+		"show_minimap": false,
+		"show_open_files": false,
+		"show_tabs": false,
+		"side_bar_visible": false,
+		"status_bar_visible": false
+	},
+	"file_history":
+	[
+		"/Users/oleg/Dropbox/special/tips.txt",
+		"/Users/oleg/Library/Application Support/Sublime Text 2/Packages/Default/Preferences.sublime-settings",
+		"/Users/oleg/Dropbox/Public/Nome/Assets/Scripts/Agent/Agent.js",
+		"/Users/oleg/Dropbox/projects/social-deals/src/static/js/contact.js",
+		"/Users/oleg/Dropbox/projects/social-deals/src/contacts_handler.py",
+		"/Users/oleg/Dropbox/projects/social-deals/src/intro.html",
+		"/Users/oleg/Dropbox/projects/social-deals/src/api_handler.py",
+		"/Users/oleg/Dropbox/projects/social-deals/deploy.py",
+		"/Users/oleg/Dropbox/projects/social-deals/src/invite.py",
+		"/Users/oleg/Library/Application Support/Sublime Text 2/Packages/Default/Default (OSX).sublime-keymap",
+		"/Users/oleg/Dropbox/projects/social-deals/src/economical_handler.py"
+	],
+	"find":
+	{
+		"height": 35.0
+	},
+	"find_in_files":
+	{
+		"height": 0.0,
+		"where_history":
+		[
+		]
+	},
+	"find_state":
+	{
+		"case_sensitive": false,
+		"find_history":
+		[
+		],
+		"highlight": true,
+		"in_selection": false,
+		"preserve_case": false,
+		"regex": false,
+		"replace_history":
+		[
+		],
+		"reverse": true,
+		"show_context": true,
+		"use_buffer2": true,
+		"whole_word": false,
+		"wrap": true
+	},
+	"groups":
+	[
+		{
+			"selected": 0,
+			"sheets":
+			[
+				{
+					"buffer": 0,
+					"file": "AssotiativeAndOrderedMemory.java",
+					"settings":
+					{
+						"buffer_size": 4349,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								920,
+								920
+							]
+						],
+						"settings":
+						{
+							"annotations":
+							[
+								"TODO",
+								"README",
+								"FIXME"
+							],
+							"csslint_options":
+							{
+								"adjoining-classes": "warning",
+								"box-model": true,
+								"box-sizing": "warning",
+								"compatible-vendor-prefixes": "warning",
+								"display-property-grouping": true,
+								"duplicate-background-images": "warning",
+								"duplicate-properties": true,
+								"empty-rules": true,
+								"errors": true,
+								"fallback-colors": "warning",
+								"floats": "warning",
+								"font-faces": "warning",
+								"font-sizes": "warning",
+								"gradients": "warning",
+								"ids": "warning",
+								"import": "warning",
+								"important": "warning",
+								"known-properties": true,
+								"outline-none": "warning",
+								"overqualified-elements": "warning",
+								"qualified-headings": "warning",
+								"regex-selectors": "warning",
+								"rules-count": "warning",
+								"shorthand": "warning",
+								"text-indent": "warning",
+								"unique-headings": "warning",
+								"universal-selector": "warning",
+								"vendor-prefix": true,
+								"zero-units": "warning"
+							},
+							"gjslint_ignore":
+							[
+								110.0
+							],
+							"gjslint_options":
+							[
+							],
+							"javascript_linter": "jshint",
+							"jshint_options":
+							{
+								"browser": true,
+								"evil": true,
+								"regexdash": true,
+								"sub": true,
+								"trailing": true,
+								"wsh": true
+							},
+							"pep8": true,
+							"pep8_ignore":
+							[
+								"E501"
+							],
+							"perl_linter": "perlcritic",
+							"pyflakes_ignore":
+							[
+							],
+							"pyflakes_ignore_import_*": true,
+							"sublimelinter": true,
+							"sublimelinter_delay": 0.0,
+							"sublimelinter_disable":
+							[
+							],
+							"sublimelinter_executable_map":
+							{
+							},
+							"sublimelinter_fill_outlines": false,
+							"sublimelinter_gutter_marks": false,
+							"sublimelinter_notes": false,
+							"sublimelinter_objj_check_ascii": false,
+							"sublimelinter_popup_errors_on_save": false,
+							"sublimelinter_syntax_map":
+							{
+								"Python Django": "python"
+							},
+							"sublimelinter_wrap_find": true,
+							"syntax": "Packages/Java/Java.tmLanguage",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 1,
+					"file": "/Users/oleg/Documents/workspace/NilisLibrary/src/org/nilis/nilismath/BasicNodeCriteria.java",
+					"settings":
+					{
+						"buffer_size": 2653,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								0,
+								0
+							]
+						],
+						"settings":
+						{
+							"annotations":
+							[
+								"TODO",
+								"README",
+								"FIXME"
+							],
+							"csslint_options":
+							{
+								"adjoining-classes": "warning",
+								"box-model": true,
+								"box-sizing": "warning",
+								"compatible-vendor-prefixes": "warning",
+								"display-property-grouping": true,
+								"duplicate-background-images": "warning",
+								"duplicate-properties": true,
+								"empty-rules": true,
+								"errors": true,
+								"fallback-colors": "warning",
+								"floats": "warning",
+								"font-faces": "warning",
+								"font-sizes": "warning",
+								"gradients": "warning",
+								"ids": "warning",
+								"import": "warning",
+								"important": "warning",
+								"known-properties": true,
+								"outline-none": "warning",
+								"overqualified-elements": "warning",
+								"qualified-headings": "warning",
+								"regex-selectors": "warning",
+								"rules-count": "warning",
+								"shorthand": "warning",
+								"text-indent": "warning",
+								"unique-headings": "warning",
+								"universal-selector": "warning",
+								"vendor-prefix": true,
+								"zero-units": "warning"
+							},
+							"gjslint_ignore":
+							[
+								110.0
+							],
+							"gjslint_options":
+							[
+							],
+							"javascript_linter": "jshint",
+							"jshint_options":
+							{
+								"browser": true,
+								"evil": true,
+								"regexdash": true,
+								"sub": true,
+								"trailing": true,
+								"wsh": true
+							},
+							"pep8": true,
+							"pep8_ignore":
+							[
+								"E501"
+							],
+							"perl_linter": "perlcritic",
+							"pyflakes_ignore":
+							[
+							],
+							"pyflakes_ignore_import_*": true,
+							"sublimelinter": true,
+							"sublimelinter_delay": 0.0,
+							"sublimelinter_disable":
+							[
+							],
+							"sublimelinter_executable_map":
+							{
+							},
+							"sublimelinter_fill_outlines": false,
+							"sublimelinter_gutter_marks": false,
+							"sublimelinter_notes": false,
+							"sublimelinter_objj_check_ascii": false,
+							"sublimelinter_popup_errors_on_save": false,
+							"sublimelinter_syntax_map":
+							{
+								"Python Django": "python"
+							},
+							"sublimelinter_wrap_find": true,
+							"syntax": "Packages/Java/Java.tmLanguage",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 2,
+					"file": "/Users/oleg/Documents/workspace/NilisLibrary/src/org/nilis/utils/data/CancellableDataStorage.java",
+					"settings":
+					{
+						"buffer_size": 219,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								0,
+								0
+							]
+						],
+						"settings":
+						{
+							"annotations":
+							[
+								"TODO",
+								"README",
+								"FIXME"
+							],
+							"csslint_options":
+							{
+								"adjoining-classes": "warning",
+								"box-model": true,
+								"box-sizing": "warning",
+								"compatible-vendor-prefixes": "warning",
+								"display-property-grouping": true,
+								"duplicate-background-images": "warning",
+								"duplicate-properties": true,
+								"empty-rules": true,
+								"errors": true,
+								"fallback-colors": "warning",
+								"floats": "warning",
+								"font-faces": "warning",
+								"font-sizes": "warning",
+								"gradients": "warning",
+								"ids": "warning",
+								"import": "warning",
+								"important": "warning",
+								"known-properties": true,
+								"outline-none": "warning",
+								"overqualified-elements": "warning",
+								"qualified-headings": "warning",
+								"regex-selectors": "warning",
+								"rules-count": "warning",
+								"shorthand": "warning",
+								"text-indent": "warning",
+								"unique-headings": "warning",
+								"universal-selector": "warning",
+								"vendor-prefix": true,
+								"zero-units": "warning"
+							},
+							"gjslint_ignore":
+							[
+								110.0
+							],
+							"gjslint_options":
+							[
+							],
+							"javascript_linter": "jshint",
+							"jshint_options":
+							{
+								"browser": true,
+								"evil": true,
+								"regexdash": true,
+								"sub": true,
+								"trailing": true,
+								"wsh": true
+							},
+							"pep8": true,
+							"pep8_ignore":
+							[
+								"E501"
+							],
+							"perl_linter": "perlcritic",
+							"pyflakes_ignore":
+							[
+							],
+							"pyflakes_ignore_import_*": true,
+							"sublimelinter": true,
+							"sublimelinter_delay": 0.0,
+							"sublimelinter_disable":
+							[
+							],
+							"sublimelinter_executable_map":
+							{
+							},
+							"sublimelinter_fill_outlines": false,
+							"sublimelinter_gutter_marks": false,
+							"sublimelinter_notes": false,
+							"sublimelinter_objj_check_ascii": false,
+							"sublimelinter_popup_errors_on_save": false,
+							"sublimelinter_syntax_map":
+							{
+								"Python Django": "python"
+							},
+							"sublimelinter_wrap_find": true,
+							"syntax": "Packages/Java/Java.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				}
+			]
+		}
+	],
+	"incremental_find":
+	{
+		"height": 34.0
+	},
+	"input":
+	{
+		"height": 0.0
+	},
+	"layout":
+	{
+		"cells":
+		[
+			[
+				0,
+				0,
+				1,
+				1
+			]
+		],
+		"cols":
+		[
+			0.0,
+			1.0
+		],
+		"rows":
+		[
+			0.0,
+			1.0
+		]
+	},
+	"menu_visible": true,
+	"output.exec":
+	{
+		"height": 100.0
+	},
+	"replace":
+	{
+		"height": 0.0
+	},
+	"save_all_on_build": true,
+	"select_file":
+	{
+		"height": 0.0,
+		"selected_items":
+		[
+			[
+				"",
+				"src/org/nilis/nilismath/essentials/AssotiativeAndOrderedMemory.java"
+			],
+			[
+				"bas",
+				"src/org/nilis/utils/data/CancellableDataStorage.java"
+			],
+			[
+				"base",
+				"src/org/nilis/nilismath/BasicNodeCriteria.java"
+			],
+			[
+				"ass",
+				"src/org/nilis/nilismath/essentials/AssotiativeAndOrderedMemory.java"
+			],
+			[
+				"co",
+				"src/contacts_handler.py"
+			],
+			[
+				"contacts_handler",
+				"src/contacts_handler.py"
+			],
+			[
+				"lol",
+				"src/locales.py"
+			]
+		],
+		"width": 0.0
+	},
+	"select_project":
+	{
+		"height": 500.0,
+		"selected_items":
+		[
+			[
+				"",
+				"/Users/oleg/Library/Application Support/Sublime Text 2/Packages/Default/efectr.sublime-project"
+			]
+		],
+		"width": 380.0
+	},
+	"show_minimap": true,
+	"show_open_files": true,
+	"show_tabs": false,
+	"side_bar_visible": true,
+	"side_bar_width": 142.0,
+	"status_bar_visible": false
+}
