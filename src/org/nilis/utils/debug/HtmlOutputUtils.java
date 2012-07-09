@@ -54,8 +54,10 @@ public class HtmlOutputUtils {
 		}
 		String ret = "<br><img src='http://chart.googleapis.com/chart?cht=gv&chl="+graphTypeString+"{";
 		int count = 0;
-		int size = edges.size();
+		int size = 0;
 		if(edges != null) {
+			count = 0;
+			size = edges.size();
 			for(DataPair<String, String> edge : edges) {
 				ret+=edge.getTag().replaceAll("\\W", "_");
 				if(type == 0) {
@@ -72,7 +74,11 @@ public class HtmlOutputUtils {
 		}
 		if(standaloneNodes != null) {
 			count = 0;
+			if(size != 0 && standaloneNodes.size() != 0) {
+				ret += ",";
+			}
 			size = standaloneNodes.size();
+			
 			for(String node : standaloneNodes) {
 				ret+=node;
 				count++;
