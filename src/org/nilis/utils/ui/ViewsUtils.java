@@ -1,5 +1,6 @@
 package org.nilis.utils.ui;
 
+import android.app.Activity;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -15,5 +16,9 @@ public class ViewsUtils {
 			}
 			((ViewGroup) view).removeAllViews();
 		}
+	}
+	
+	public static void unbindDrawables(Activity activity) {
+		unbindDrawables(activity.getWindow().getDecorView().findViewById(android.R.id.content));
 	}
 }

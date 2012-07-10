@@ -42,19 +42,30 @@ public class HtmlOutputUtils {
 	}
 	
 	private static SimpleDateFormat sdf = new SimpleDateFormat("dd MMMMM, yyyy HH:mm:ss");
-	public static String linearTimedChart(Map<Date, Long> input, String valueTag) {
-			String divId = ""+Math.random();
-			String ret = 
-			        "<div id='"+divId+"'></div>" +
-					"<script type='text/javascript'>"+
-	      "var data = new google.visualization.DataTable();"+
-	      "data.addColumn('datetime', '"+"time"+"');"+
-	      "data.addColumn('number', '"+valueTag+"');";
+	public static String linearTimedChart(Map<Date, Long> input, String valueTag, String chartTag, boolean clearChart) {
+		String divId = "";
+		if(chartTag != null) {
+			divId = chartTag;
+		} else {
+			divId+=Math.round(Math.random()*10000000);
+		}
+			String ret = "";
+			if(chartTag == null) {
+			        ret+="<div id='"+divId+"'></div>";
+			} else {
+				ret+="<script>if($('#"+divId+"').size() <= 0) {";
+				ret+="$('#static_area').append(\"<div id='"+divId+"'></div>\"); }</script>";
+			}
+	      ret+="<script type='text/javascript'>";
+	      ret+="if(window['dataTable"+divId+"'] == undefined || "+clearChart+") {window['dataTable"+divId+"']=new google.visualization.DataTable();";
+	      ret+="window['dataTable"+divId+"'].addColumn('datetime', '"+"time"+"');"+
+	    	    "window['dataTable"+divId+"'].addColumn('number', '"+valueTag+"');}";
+	      ret+="var data = window['dataTable"+divId+"'];";
 			
 			for(Entry<Date, Long> entry : input.entrySet()) {
 				ret+="data.addRow([new Date('"+sdf.format(entry.getKey())+"'), "+entry.getValue()+"]);";
 			}
-	        ret+="var options = {'width':800,'height':600};"+
+	        ret+="var options = {'width':600,'height':300};"+
 	        "var chart = new google.visualization."+"LineChart"+"(document.getElementById('"+divId+"'));"+
 	        "chart.draw(data, options);"+
 	        "</script>";

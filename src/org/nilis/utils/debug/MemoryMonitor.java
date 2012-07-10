@@ -1,9 +1,6 @@
 package org.nilis.utils.debug;
 
-import java.nio.channels.GatheringByteChannel;
-import java.text.DateFormat;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Timer;
@@ -21,9 +18,9 @@ public class MemoryMonitor {
 		
 		@Override
 		public void run() {
-			runtime.gc();
+			//runtime.gc();
 			synchronized (log) {
-				log.put(new Date(), runtime.totalMemory() - runtime.freeMemory());
+				log.put(new Date(), Long.valueOf(Math.round((runtime.totalMemory() - runtime.freeMemory())/1024)));
 			}
 		}
 	};
@@ -33,18 +30,15 @@ public class MemoryMonitor {
 		@Override
 		public void run() {
 			synchronized (log) {
-				String out = "";
-				for(Date time : log.keySet()) {
-					out=out+"<ol>"+time+"   "+log.get(time)+"</ol>";
-				}
-				out="<ul>"+out+"</ul>";
-				D.i(HtmlOutputUtils.linearTimedChart(log, "Memory"));
+				D.i(HtmlOutputUtils.linearTimedChart(log, "Memory, KB", "memory_use", false));
+				log.clear();
 			}
 		}
 	};
 	
 	public static void init() {
-		gatheringTimer.scheduleAtFixedRate(gatheringTimerTask, 0, 10*1000);
-		publishingTimer.scheduleAtFixedRate(publishInfoTimerTask, 1000*5, 1000*20);
+		D.i(HtmlOutputUtils.linearTimedChart(log, "Memory, KB", "memory_use", true));
+		gatheringTimer.scheduleAtFixedRate(gatheringTimerTask, 0, 3*1000);
+		publishingTimer.scheduleAtFixedRate(publishInfoTimerTask, 1000*5, 1000*8);
 	}
 }
