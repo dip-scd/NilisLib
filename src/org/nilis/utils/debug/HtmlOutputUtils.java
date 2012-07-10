@@ -1,5 +1,7 @@
 package org.nilis.utils.debug;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -37,6 +39,27 @@ public class HtmlOutputUtils {
 	
 	public static String barChart(Map<String, Double> input, String keyColumnNameInput, String valueColumnNameInput) {
 		return mapBasedChartString("BarChart", input, keyColumnNameInput, valueColumnNameInput);
+	}
+	
+	private static SimpleDateFormat sdf = new SimpleDateFormat("dd MMMMM, yyyy HH:mm:ss");
+	public static String linearTimedChart(Map<Date, Long> input, String valueTag) {
+			String divId = ""+Math.random();
+			String ret = 
+			        "<div id='"+divId+"'></div>" +
+					"<script type='text/javascript'>"+
+	      "var data = new google.visualization.DataTable();"+
+	      "data.addColumn('datetime', '"+"time"+"');"+
+	      "data.addColumn('number', '"+valueTag+"');";
+			
+			for(Entry<Date, Long> entry : input.entrySet()) {
+				ret+="data.addRow([new Date('"+sdf.format(entry.getKey())+"'), "+entry.getValue()+"]);";
+			}
+	        ret+="var options = {'width':800,'height':600};"+
+	        "var chart = new google.visualization."+"LineChart"+"(document.getElementById('"+divId+"'));"+
+	        "chart.draw(data, options);"+
+	        "</script>";
+			
+			return ret;
 	}
 	
 	public static String image(String imageUrl) {
