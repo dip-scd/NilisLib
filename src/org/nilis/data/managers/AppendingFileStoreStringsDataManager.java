@@ -45,23 +45,25 @@ public class AppendingFileStoreStringsDataManager<TKey> extends DataManager<TKey
 
 	@Override
 	public void doSet(TKey key, String data) {
-		final File fileToSet = getFile();
-		if(!fileToSet.exists()) {
-			fileToSet.mkdirs();
-			try {
-				fileToSet.createNewFile();
-			} catch (IOException exception) {
-				//D.e(exception);
+		synchronized (file) {
+			final File fileToSet = getFile();
+			if(!fileToSet.exists()) {
+				fileToSet.mkdirs();
+				try {
+					fileToSet.createNewFile();
+				} catch (IOException exception) {
+					//D.e(exception);
+				}
 			}
-		}
-		
-		PrintWriter outFile;
-		try {
-			outFile = new PrintWriter(fileToSet);
-			outFile.println(data.getBytes());
-			outFile.close();
-		} catch (FileNotFoundException exception) {
-			exception.printStackTrace();
+			
+			PrintWriter outFile;
+			try {
+				outFile = new PrintWriter(fileToSet);
+				outFile.println(data.getBytes());
+				outFile.close();
+			} catch (FileNotFoundException exception) {
+				exception.printStackTrace();
+			}
 		}
 	}
 
