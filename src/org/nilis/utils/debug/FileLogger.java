@@ -12,7 +12,8 @@ public class FileLogger {
 		storage = new DataStorage<String, String>(new AppendingFileStoreStringsDataManager<String>(context));
 	}
 	
-	public void log(String message) {
+	public FileLogger log(String message) {
 		storage.set(null, message);
+		return this;
 	}
 } 

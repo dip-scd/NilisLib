@@ -19,9 +19,9 @@ public abstract class BaseFilenameConverter<TKey> extends KeyToFilenameDataConve
 
 	public static String pathToUseForStoring(Context context) {
 		if (!(Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED))) {
-			return context.getExternalFilesDir(context.getPackageName()).getAbsolutePath();
+			return context.getExternalFilesDir(context.getPackageName()).getAbsolutePath() + "/";
 		}
-		return context.getFilesDir().getAbsolutePath() + context.getPackageName();
+		return context.getFilesDir().getAbsolutePath() + "/" + context.getPackageName();
 	}
 	
 	protected abstract String keyToName(TKey key);
