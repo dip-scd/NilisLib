@@ -219,11 +219,32 @@ public class D {
 			log(Log.DEBUG, logString);
 	}
 	
+	public static void logCurrentStackTrace(String customMessage, int maxStackLength) {
+		String logString = customMessage+""+getStackTrace(maxStackLength);
+		log(Log.DEBUG, logString);
+}
+	
 	public static void logCurrentStackTrace() {
 		String logString = ""+getStackTrace(); //if you'll call logCurrentStackTrace(String customMessage)
 												 //instead this code, extra stack trace element will be displayed
 												 //see getStackTrace(). So small duplicating left for a while
 		log(Log.DEBUG, logString);
+	}
+	
+	public static void logCurrentStackTrace(int maxStackLength) {
+		String logString = ""+getStackTrace(maxStackLength); //if you'll call logCurrentStackTrace(String customMessage)
+												 //instead this code, extra stack trace element will be displayed
+												 //see getStackTrace(). So small duplicating left for a while
+		log(Log.DEBUG, logString);
+	}
+	
+	private static String getStackTrace(int maxStackLength) {
+		String ret = "";
+		StackTraceElement[] ste = Thread.currentThread().getStackTrace();
+		for(int i = 4; i<Math.min(maxStackLength+4, ste.length-1); i++) {
+			ret+="\n"+ste[i].toString();
+		}
+		return ret;
 	}
 	
 	private static String getStackTrace() {
