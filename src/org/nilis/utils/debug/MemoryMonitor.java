@@ -63,6 +63,7 @@ public class MemoryMonitor {
 	private static String memoryLegentPrefix = "Memory (";
 	private static String memoryLegentPostfix = "), KB";
 	public static void logMemory(String memoryLogId, boolean submitLog) {
+		runtime.gc();
 		lastMeasuredMemory = (runtime.totalMemory() - runtime.freeMemory())/1024;
 		boolean clearChart = false;
 		if(!memoryDeltas.containsKey(memoryLogId)) {
@@ -74,7 +75,6 @@ public class MemoryMonitor {
 			D.i(HtmlOutputUtils.linearTimedChart(memoryDeltas.get(memoryLogId), memoryLegentPrefix+memoryLogId+memoryLegentPostfix,
 					memoryLogId, clearChart));
 			memoryDeltas.get(memoryLogId).clear();
-			runtime.gc();
 		}
 	}
 }
