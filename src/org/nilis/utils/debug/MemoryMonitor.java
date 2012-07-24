@@ -53,8 +53,7 @@ public class MemoryMonitor {
 	}
 	
 	private static Map<String, Map<Date, Long>> memoryDeltas = new LinkedHashMap<String, Map<Date,Long>>();
-	//private static Map<String, Long> lastMeasuredMemories = new LinkedHashMap<String, Long>();
-	
+
 	private static long lastMeasuredMemory = 0;
 	public static void logMemory(String memoryLogId) {
 		logMemory(memoryLogId, true);

@@ -2,6 +2,7 @@ package org.nilis.utils.debug;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -131,6 +132,31 @@ public class HtmlOutputUtils {
 	        ret+=IF_WINDOW+chartTag+CHART_UNDEFINED_WINDOW2+chartTag+CHART_DRAW_DATA_OPTIONS_SCRIPT;
 			
 			return ret;
+	}
+	
+	
+	private static Map<String, Map<Date, Long>> valueDeltas = new LinkedHashMap<String, Map<Date,Long>>();
+
+	private static long lastMeasuredValue = 0;
+	public static void logValueForLinearChart(String memoryLogId, long value) {
+		logValueForLinearChart(memoryLogId, value, true);
+	}
+	
+	private static String valueLegentPrefix = "";
+	private static String valueLegentPostfix = "";
+	public static void logValueForLinearChart(String memoryLogId, long value, boolean submitLog) {
+		lastMeasuredValue = value;
+		boolean clearChart = false;
+		if(!valueDeltas.containsKey(memoryLogId)) {
+			clearChart = true;
+			valueDeltas.put(memoryLogId, new LinkedHashMap<Date, Long>());
+		}
+		valueDeltas.get(memoryLogId).put(new Date(), lastMeasuredValue);
+		if(submitLog || valueDeltas.get(memoryLogId).size() > 60) {
+			D.i(HtmlOutputUtils.linearTimedChart(valueDeltas.get(memoryLogId), valueLegentPrefix+memoryLogId+valueLegentPostfix,
+					memoryLogId, clearChart));
+			valueDeltas.get(memoryLogId).clear();
+		}
 	}
 	
 	public static String image(String imageUrl) {

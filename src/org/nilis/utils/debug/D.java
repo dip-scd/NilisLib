@@ -93,6 +93,11 @@ public class D {
 		D.remoteLog = true;
 		D.i("Remote logging started");
 	}
+	
+	public static void enableEverything(Context context) {
+		enableDebug();
+		enableRemoteLogging(context);
+	}
 
 	public static void disableRemoteLogging() {
 		D.remoteLog = false;
