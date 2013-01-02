@@ -16,4 +16,9 @@ public class CachedDataStorage<TKey, TData> extends DataStorage<TKey, TData> {
 	public boolean isInCache(TKey key) {
 		return ((CachingDataManager<TKey, TData, ?>)dataManager).isInCache(key);
 	}
+	
+	@SuppressWarnings("unchecked")
+	public void invalidate(TKey key) {
+		((CachingDataManager<TKey, TData, ?>)dataManager).doRemove(key);
+	}
 }

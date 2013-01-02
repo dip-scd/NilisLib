@@ -218,4 +218,8 @@ public class HtmlOutputUtils {
 	public static String directedGraph(Set<DataPair<String, String>> edges, Set<String> standaloneNodes) {
 		return parametrizedGraph(edges, standaloneNodes, 1);
 	}
+	
+	public static String coloredSpan(String input, String color) {
+		return "<span style=\" color: "+color+";\" >"+input+"</span>";
+	}
 }

@@ -1,18 +1,30 @@
 package org.nilis.data.managers;
 
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.nilis.data.DataStorage.DataManager;
+import org.nilis.utils.debug.D;
 
 
 public class RamDataManager<TKey, TData> extends DataManager<TKey, TData> {
 	
 	private Map<TKey, TData> storage;
+	private List<TKey> keys;
+	
+	private int capacity = 20;
+	
 	public RamDataManager() {
-		storage = new HashMap<TKey, TData>();
+		this(1024);
+	}
+	
+	public RamDataManager(int capacity) {
+		storage = new ConcurrentHashMap<TKey, TData>();
+		keys = new LinkedList<TKey>();
+		this.capacity = capacity;
 	}
 
 	@Override
@@ -38,12 +50,24 @@ public class RamDataManager<TKey, TData> extends DataManager<TKey, TData> {
 
 	@Override
 	public void doSet(TKey key, TData data) {
+		if(data == null) {
+			return;
+		}
 		storage.put(key, data);
+		keys.add(key);
+		if(keys.size() > capacity) {
+			doRemove(keys.remove(0));
+		}
 	}
 
 	@Override
 	public void doRemove(TKey key) {
-		storage.remove(key);
+		try {
+			storage.remove(key);
+			keys.remove(key);
+		} catch(Throwable e) {
+			D.e(e);
+		}
 	}
 
 }

@@ -18,16 +18,17 @@ public class FileDataDownloader extends DataDownloader<File> {
 		urlsToFileNameConverter = new UrlStringsToFileNameConverter(context);
 	}
 	
+	@SuppressWarnings("resource")
 	@Override
 	protected void processInputStream(InputStream stream, RemoteActionTask task) {
 		String fileName = urlsToFileNameConverter.keyToFilename(task.getUrl());
 		File outFile = new File(fileName);
 		outFile.delete();
 		outFile.getParentFile().mkdirs();
-		
+		FileOutputStream fw = null;
 		try {
 			outFile.createNewFile();
-			FileOutputStream fw = new FileOutputStream(outFile);
+			fw = new FileOutputStream(outFile);
 			byte[] buffer = new byte[BUFFER_SIZE];
 			int n = 0;
 			
@@ -38,7 +39,19 @@ public class FileDataDownloader extends DataDownloader<File> {
 				fw.write(buffer, 0, n);
 			}
 		} catch (final IOException e) {
+			try {
+				if(fw != null) {
+					fw.close();
+				}
+			} catch (IOException e1) {
+			}
 			task.notifyListenersAboutFail(e);
+		}
+		try {
+			if(fw != null) {
+				fw.close();
+			}
+		} catch (IOException e1) {
 		}
 		task.notifyListenersAboutComplete(outFile);
 	}

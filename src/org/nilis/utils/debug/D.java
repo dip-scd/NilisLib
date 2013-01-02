@@ -252,7 +252,7 @@ public class D {
 		return ret;
 	}
 	
-	private static String getStackTrace() {
+	public static String getStackTrace() {
 		String ret = "";
 		StackTraceElement[] ste = Thread.currentThread().getStackTrace();
 		for(int i = 4; i<ste.length-1; i++) {

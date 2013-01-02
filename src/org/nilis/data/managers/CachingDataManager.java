@@ -3,23 +3,44 @@ package org.nilis.data.managers;
 import org.nilis.data.DataStorage.DataManager;
 import org.nilis.utils.data.SyncDataConverter;
 import org.nilis.utils.data.WeakCache;
+import org.nilis.utils.debug.D;
 
 public class CachingDataManager<TKey, TData, TOperatedData> extends DataManager<TKey, TData> {
 	
-	WeakCache<TKey, TData> weakCache = new WeakCache<TKey, TData>();
+	protected WeakCache<TKey, TData> weakCache = new WeakCache<TKey, TData>();
 	
-	DataManager<TKey, TOperatedData> dataProviderManager;
-	DataManager<TKey, TOperatedData> dataStorageManager;
-	SyncDataConverter<TKey, TData, TOperatedData> dataConverter;
+	protected DataManager<TKey, TOperatedData> dataProviderManager;
+	protected DataManager<TKey, TOperatedData> dataStorageManager;
+	protected SyncDataConverter<TKey, TData, TOperatedData> dataConverter;
+	
+	
+	@SuppressWarnings("unused")
 	public CachingDataManager(DataManager<TKey, TOperatedData> dataProviderManager, 
 			DataManager<TKey, TOperatedData> dataStorageManager, 
 			SyncDataConverter<TKey, TData, TOperatedData> dataConverter) {
-		if(dataProviderManager == null || dataStorageManager == null || dataConverter == null) {
+		if(dataProviderManager == null || dataStorageManager == null) {
 			throw new IllegalArgumentException();
 		}
 		this.dataProviderManager = dataProviderManager;
 		this.dataStorageManager = dataStorageManager;
-		this.dataConverter = dataConverter;
+		if(dataConverter == null) {
+			this.dataConverter = new SyncDataConverter<TKey, TData, TOperatedData>() {
+
+				@SuppressWarnings("unchecked")
+				@Override
+				public TOperatedData forwardConvert(TKey tag, TData data) {
+					return (TOperatedData)data;
+				}
+				
+				@SuppressWarnings("unchecked")
+				@Override
+				public TData backwardConvert(TKey tag, TOperatedData data) {
+					return (TData)data;
+				}
+			};
+		} else {
+			this.dataConverter = dataConverter;
+		}
 	}
 
 	@Override
@@ -71,5 +92,12 @@ public class CachingDataManager<TKey, TData, TOperatedData> extends DataManager<
 			return true;
 		} 
 		return dataStorageManager.contains(key);
+	}
+	
+	public void invalidate(TKey key) {
+		if(weakCache.get(key) != null) {
+			weakCache.put(key, null);
+		}
+		dataStorageManager.doRemove(key);
 	}
 }

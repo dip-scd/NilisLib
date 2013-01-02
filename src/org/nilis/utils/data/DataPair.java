@@ -1,7 +1,7 @@
 package org.nilis.utils.data;
 
 
-public class DataPair<TTag, TData> {
+public class DataPair<TTag extends Object, TData extends Object> extends Object{
 	private TTag tag;
 	public TTag getTag() {
 		return tag;
@@ -54,5 +54,11 @@ public class DataPair<TTag, TData> {
 		} else if (!tag.equals(other.tag))
 			return false;
 		return true;
+	}
+	
+	@Override
+	public String toString() {
+		String ret = "DataPair: ("+tag+", "+data+")";
+		return ret;
 	}
 }

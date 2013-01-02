@@ -100,6 +100,7 @@ public abstract class DataDownloader<TData> implements CancellableDataProvider<S
 					return;
 				}
 				os.write(buffer, 0, n);
+				//System.out.print("read: "+buffer);
 			}
 		} catch (final IOException e) {
 			task.notifyListenersAboutFail(e);

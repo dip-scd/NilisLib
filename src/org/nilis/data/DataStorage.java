@@ -7,127 +7,133 @@ import java.util.List;
 
 import org.nilis.utils.data.DataPair;
 
-public class DataStorage<TKey, TData> implements DataProvider<TKey, TData>{
+public class DataStorage<TKey, TData> implements DataProvider<TKey, TData> {
 	public static interface DataModificationsListener<TKey> {
 		void onDataSet(Collection<TKey> keys);
+
 		void onDataRemoved(Collection<TKey> keys);
 	}
-	
+
 	public static abstract class DataManager<TKey, TData> {
 		abstract public boolean contains(TKey key);
+
 		abstract public long count();
-		
+
 		public List<DataPair<TKey, TData>> get(List<TKey> keys) {
-			List<DataPair<TKey, TData>> ret = new ArrayList<DataPair<TKey,TData>>();
-			for(TKey key : keys) {
+			List<DataPair<TKey, TData>> ret = new ArrayList<DataPair<TKey, TData>>();
+			for (TKey key : keys) {
 				ret.add(new DataPair<TKey, TData>(key, doGet(key)));
 			}
 			return ret;
 		}
+
 		public void set(Collection<DataPair<TKey, TData>> items) {
-			for(DataPair<TKey, TData> pair : items) {
+			for (DataPair<TKey, TData> pair : items) {
 				doSet(pair.getTag(), pair.getData());
 			}
 		}
+
 		public void remove(Collection<TKey> keys) {
-			for(TKey key : keys) {
+			for (TKey key : keys) {
 				doRemove(key);
 			}
 		}
-		
-		abstract public TKey indexToKey(long index);
+
+		public TKey indexToKey(long index) {
+			return null;
+		}
+
 		abstract public TData doGet(TKey key);
+
 		abstract public void doSet(TKey key, TData data);
+
 		abstract public void doRemove(TKey key);
-		
-		protected void onItemsSet(@SuppressWarnings("unused") Collection<TKey> keys) {
-			
+
+		protected void onItemsSet(
+				Collection<TKey> keys) {
+
 		}
-		
-		protected void onItemsRemoved(@SuppressWarnings("unused") Collection<TKey> keys) {
-			
+
+		protected void onItemsRemoved(
+				Collection<TKey> keys) {
+
 		}
-		
+
 		protected void onStateChanged() {
-			
+
 		}
 	}
-	
+
 	protected DataManager<TKey, TData> dataManager;
+
 	public DataStorage(DataManager<TKey, TData> dataManager) {
-		if(dataManager == null) {
+		if (dataManager == null) {
 			throw new IllegalArgumentException("dataManager can't be null");
 		}
 		this.dataManager = dataManager;
 	}
-	
-	//data management functionality
+
+	// data management functionality
 	final private Object dataManipulationMutex = new Object();
-	
+
 	@Override
 	final public boolean contains(TKey key) {
 		return dataManager.contains(key);
 	}
-	
+
 	@Override
 	final public long count() {
 		return dataManager.count();
 	}
-	
+
 	@Override
 	final public List<TData> get(List<TKey> keys) {
-		synchronized (dataManipulationMutex) {
-			List<TData> ret = new ArrayList<TData>();
-			if(keys != null) {
-				List<DataPair<TKey, TData>> items = dataManager.get(keys);
-				for(DataPair<TKey, TData> pair : items) {
-					ret.add(pair.getData());
-				}
+		List<TData> ret = new ArrayList<TData>();
+		if (keys != null) {
+			List<DataPair<TKey, TData>> items = dataManager.get(keys);
+			for (DataPair<TKey, TData> pair : items) {
+				ret.add(pair.getData());
 			}
-			return ret;
 		}
+		return ret;
 	}
-	
+
 	@Override
 	final public Collection<DataPair<TKey, TData>> get(Collection<TKey> keys) {
-		synchronized (dataManipulationMutex) {
-			if(keys != null) {
-				return dataManager.get(new ArrayList<TKey>(keys));
-			}
-			return new ArrayList<DataPair<TKey,TData>>();
+		if (keys != null) {
+			return dataManager.get(new ArrayList<TKey>(keys));
 		}
+		return new ArrayList<DataPair<TKey, TData>>();
 	}
-	
+
 	@Override
 	final public TData get(TKey key) {
-		synchronized (dataManipulationMutex) {
-			if(key != null) {
-				final Collection<TKey> keysList = new LinkedList<TKey>();
-				keysList.add(key);
-				final Collection<DataPair<TKey, TData>> ret = get(keysList);
-				if(ret != null && ret.size() > 0) {
-					for(DataPair<TKey, TData> pair : ret) {
-						return pair.getData();
-					}
+		if (key != null) {
+			final Collection<TKey> keysList = new LinkedList<TKey>();
+			keysList.add(key);
+			final Collection<DataPair<TKey, TData>> ret = get(keysList);
+			if (ret != null && ret.size() > 0) {
+				for (DataPair<TKey, TData> pair : ret) {
+					return pair.getData();
 				}
 			}
-			return null;
 		}
+		return null;
 	}
-	
+
 	@Override
 	public TData getByIndex(long index) {
 		return get(dataManager.indexToKey(index));
 	}
-	
+
 	final public void set(List<TKey> keys, List<TData> data) {
 		synchronized (dataManipulationMutex) {
-			if(keys == null || data == null || keys.size() != data.size()) {
+			if (keys == null || data == null || keys.size() != data.size()) {
 				return;
 			}
-			final Collection<DataPair<TKey, TData>> items = new ArrayList<DataPair<TKey,TData>>();
-			for(int i=0; i<keys.size(); i++) {
-					items.add(new DataPair<TKey, TData>(keys.get(i), data.get(i)));
+			final Collection<DataPair<TKey, TData>> items = new ArrayList<DataPair<TKey, TData>>();
+			for (int i = 0; i < keys.size(); i++) {
+				items.add(new DataPair<TKey, TData>(keys.get(i), data.get(i)));
 			}
 			dataManager.set(items);
 			dataManager.onItemsSet(keys);
@@ -135,14 +141,14 @@ public class DataStorage<TKey, TData> implements DataProvider<TKey, TData>{
 		}
 		notifyListenersAboutDataSet(keys);
 	}
-	
+
 	final public void set(Collection<DataPair<TKey, TData>> itemsToSet) {
 		final List<TKey> processedKeys = new ArrayList<TKey>();
 		synchronized (dataManipulationMutex) {
-			if(itemsToSet == null) {
+			if (itemsToSet == null) {
 				return;
 			}
-			for(DataPair<TKey, TData> item : itemsToSet) {
+			for (DataPair<TKey, TData> item : itemsToSet) {
 				processedKeys.add(item.getTag());
 			}
 			dataManager.set(itemsToSet);
@@ -151,14 +157,14 @@ public class DataStorage<TKey, TData> implements DataProvider<TKey, TData>{
 		}
 		notifyListenersAboutDataSet(processedKeys);
 	}
-	
+
 	final public void set(TKey key, TData data) {
 		final List<TKey> processedKeys = new ArrayList<TKey>();
 		synchronized (dataManipulationMutex) {
-			if(key == null) {
+			if (key == null) {
 				return;
 			}
-			Collection<DataPair<TKey, TData>> items = new LinkedList<DataPair<TKey,TData>>();
+			Collection<DataPair<TKey, TData>> items = new LinkedList<DataPair<TKey, TData>>();
 			items.add(new DataPair<TKey, TData>(key, data));
 			dataManager.set(items);
 			processedKeys.add(key);
@@ -167,11 +173,11 @@ public class DataStorage<TKey, TData> implements DataProvider<TKey, TData>{
 		}
 		notifyListenersAboutDataSet(processedKeys);
 	}
-	
+
 	final public void remove(TKey key) {
 		final List<TKey> processedKeys = new ArrayList<TKey>();
 		synchronized (dataManipulationMutex) {
-			if(key == null) {
+			if (key == null) {
 				return;
 			}
 			Collection<TKey> items = new LinkedList<TKey>();
@@ -183,10 +189,10 @@ public class DataStorage<TKey, TData> implements DataProvider<TKey, TData>{
 		}
 		notifyListenersAboutDataRemoved(processedKeys);
 	}
-	
+
 	final public void remove(Collection<TKey> keys) {
 		synchronized (dataManipulationMutex) {
-			if(keys == null) {
+			if (keys == null) {
 				return;
 			}
 			dataManager.remove(keys);
@@ -195,42 +201,45 @@ public class DataStorage<TKey, TData> implements DataProvider<TKey, TData>{
 		}
 		notifyListenersAboutDataRemoved(keys);
 	}
-	
-	//notification functionality
+
+	// notification functionality
 	final private Object dataListneresManipulationMutex = new Object();
 	final private Collection<DataModificationsListener<TKey>> dataModifiedListeners = new LinkedList<DataModificationsListener<TKey>>();
-	final public void setDataModifiedListener(DataModificationsListener<TKey> listener) {
+
+	final public void setDataModifiedListener(
+			DataModificationsListener<TKey> listener) {
 		synchronized (dataListneresManipulationMutex) {
-			if(listener == null || dataModifiedListeners.contains(listener)) {
+			if (listener == null || dataModifiedListeners.contains(listener)) {
 				return;
 			}
 			dataModifiedListeners.add(listener);
 		}
 	}
-	
-	final public void removeDataModifiedListener(DataModificationsListener<TKey> listener) {
+
+	final public void removeDataModifiedListener(
+			DataModificationsListener<TKey> listener) {
 		synchronized (dataListneresManipulationMutex) {
-			if(listener == null) {
+			if (listener == null) {
 				return;
 			}
-			if(dataModifiedListeners.contains(listener)) {
+			if (dataModifiedListeners.contains(listener)) {
 				dataModifiedListeners.remove(listener);
 			}
 		}
 	}
-	
+
 	final protected void notifyListenersAboutDataSet(Collection<TKey> keys) {
-		for(DataModificationsListener<TKey> listener : dataModifiedListeners) {
+		for (DataModificationsListener<TKey> listener : dataModifiedListeners) {
 			listener.onDataSet(keys);
 		}
 	}
-	
+
 	final protected void notifyListenersAboutDataRemoved(Collection<TKey> keys) {
-		for(DataModificationsListener<TKey> listener : dataModifiedListeners) {
+		for (DataModificationsListener<TKey> listener : dataModifiedListeners) {
 			listener.onDataRemoved(keys);
 		}
 	}
-	
+
 	final public TKey indexToKey(long index) {
 		return dataManager.indexToKey(index);
 	}
