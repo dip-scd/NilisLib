@@ -89,12 +89,6 @@ public class TasksQueryProcessor<TTask extends TaskWithListeners<TTaskResult>, T
 			tasks.add(taskWrapper);
 			executor.submit(task);
 		}
-//		if(tasks.size() >= 10) {
-//			int a = 0;
-			//System.out.print(D.getStackTrace());
-//		}
-		//System.out.print("\ntasks query length: "+tasks.size()+"\n");
-		//printTasks();
 	}
 	
 	public void printTasks() {
@@ -117,23 +111,17 @@ public class TasksQueryProcessor<TTask extends TaskWithListeners<TTaskResult>, T
 		if(wrapper == null) {
 			return;
 		}
-		//Future<?> tasksFuture = tasks.get(wrapper);
 		int s1 = tasks.size();
 		tasks.remove(wrapper);
-//		for(TaskWrapper w : tasks) {
-//			tasks.remove(w);
-//		}
-		int s2 = tasks.size();
-		System.out.print(s1+" vs "+s2+"\n");
-//		if(tasksFuture != null && (!tasksFuture.isCancelled() && !tasksFuture.isDone())) {
-//			tasksFuture.cancel(true);
-//		}
-		
 	}
 
 	@Override
 	public void cancelAllTasks() {
 		tasks.clear();
 		executor.shutdownNow();
+	}
+	
+	public int tasksCount() {
+		return tasks.size();
 	}
 }
