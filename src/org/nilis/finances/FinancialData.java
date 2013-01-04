@@ -44,6 +44,10 @@ public class FinancialData {
 		protected long period = 0;
 		public boolean completed;
 		
+		public PriceGroupedTicksBundle(long startTime, long period) {
+			this(startTime, period, true);
+		}
+		
 		public PriceGroupedTicksBundle(long startTime, long period, boolean completed) {
 			this.startTime = startTime;
 			this.period = period;
