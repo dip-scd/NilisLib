@@ -85,9 +85,10 @@ public class TasksQueryProcessor<TTask extends TaskWithListeners<TTaskResult>, T
 	public synchronized void addTask(final TTask task) {
 		if(!taskInQuery(task)) {
 			TaskWrapper taskWrapper = new TaskWrapper(task);
-			//Future<?> f = 
 			tasks.add(taskWrapper);
 			executor.submit(task);
+		} else {
+			D.i("task already in query");
 		}
 	}
 	
@@ -117,8 +118,12 @@ public class TasksQueryProcessor<TTask extends TaskWithListeners<TTaskResult>, T
 
 	@Override
 	public void cancelAllTasks() {
-		tasks.clear();
+		clearTasks();
 		executor.shutdownNow();
+	}
+
+	public void clearTasks() {
+		tasks.clear();
 	}
 	
 	public int tasksCount() {

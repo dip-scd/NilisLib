@@ -22,7 +22,7 @@ public class MySqlDb {
 			}
 			String url = "jdbc:mysql://"+host+":"+port+"/"+db;
             conn = DriverManager.getConnection(url, user, pass);
-            stat = conn.createStatement();
+            stat = conn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_UPDATABLE);
 
         } catch (SQLException ex) {
             ex.printStackTrace();
@@ -31,7 +31,9 @@ public class MySqlDb {
 	
 	public ResultSet query(String query) {
 		try {
+			//Statement stat = conn.createStatement();
 			return stat.executeQuery(query);
+			//stat.close();
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
@@ -40,7 +42,9 @@ public class MySqlDb {
 	
 	public void exec(String query) {
 		try {
+			//Statement stat = conn.createStatement();
 			stat.execute(query);
+			//stat.close();
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}

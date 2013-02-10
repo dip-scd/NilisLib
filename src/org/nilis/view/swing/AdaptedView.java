@@ -8,6 +8,7 @@ import java.awt.Paint;
 
 import javax.swing.JPanel;
 
+import org.nilis.utils.debug.D;
 import org.nilis.utils.execution_flow.TaskWithListeners;
 import org.nilis.utils.execution_flow.TasksExecutor;
 import org.nilis.utils.execution_flow.TasksProcessor.OnTaskExecutionListener;
@@ -33,14 +34,26 @@ public abstract class AdaptedView<TDataToDisplay, TInputData> extends JPanel imp
 
 			@Override
 			public void run() {
+				D.d("GetTask run "+toString());
 				notifyListenersAboutComplete(AdaptedView.this.convert(input));
+			}
+			
+			public String toString() {
+				String ret = "GetTask: ";
+				ret+=input.toString();
+				ret+="\n";
+				return ret;
 			}
 		}
 		
 		public void get(TInputData input) {
-			if(executor.tasksCount() <= 0) {
-				executor.addTask(new GetTask(AdaptedView.this, input));
+			if(executor.tasksCount() > 3) {
+				D.w("executor already has tasks");
+				return;
+				//executor.clearTasks();
 			}
+			executor.addTask(new GetTask(AdaptedView.this, input));
+			//executor.printTasks();
 		}
 	};
 	
@@ -48,8 +61,12 @@ public abstract class AdaptedView<TDataToDisplay, TInputData> extends JPanel imp
 	
 	@Override
 	public void onTaskCompleted(TDataToDisplay result) {
-		cache = result;
+		updateCache(result);
 		repaint();
+	}
+
+	protected void updateCache(TDataToDisplay result) {
+		cache = result;
 	}
 	
 	protected boolean toUpdateData = true;
