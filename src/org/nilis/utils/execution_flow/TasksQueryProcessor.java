@@ -82,13 +82,15 @@ public class TasksQueryProcessor<TTask extends TaskWithListeners<TTaskResult>, T
     }
 
 	@Override
-	public synchronized void addTask(final TTask task) {
-		if(!taskInQuery(task)) {
-			TaskWrapper taskWrapper = new TaskWrapper(task);
-			tasks.add(taskWrapper);
-			executor.submit(task);
-		} else {
-			D.i("task already in query");
+	public void addTask(final TTask task) {
+		synchronized(tasks) {
+			if(!taskInQuery(task)) {
+				TaskWrapper taskWrapper = new TaskWrapper(task);
+				tasks.add(taskWrapper);
+				executor.submit(task);
+			} else {
+				D.i("task already in query");
+			}
 		}
 	}
 	
