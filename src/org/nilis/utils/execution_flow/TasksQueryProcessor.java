@@ -64,12 +64,14 @@ public class TasksQueryProcessor<TTask extends TaskWithListeners<TTaskResult>, T
     }
     
     public boolean taskInQuery(final TTask task) {
-    	for(TaskWrapper w : tasks) {
-    		if(w.equals(task)) {
-    			return true;
-    		}
+    	synchronized (tasks) {
+	    	for(TaskWrapper w : tasks) {
+	    		if(w.equals(task)) {
+	    			return true;
+	    		}
+	    	}
+	    	return false;
     	}
-    	return false;
     }
     
     protected TaskWrapper findTask(final TTask task) {
