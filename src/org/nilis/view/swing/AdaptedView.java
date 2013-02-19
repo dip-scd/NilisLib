@@ -34,7 +34,7 @@ public abstract class AdaptedView<TDataToDisplay, TInputData> extends JPanel imp
 
 			@Override
 			public void run() {
-				D.d("GetTask run "+toString());
+				//D.d("run "+toString());
 				notifyListenersAboutComplete(AdaptedView.this.convert(input));
 			}
 			
@@ -47,8 +47,8 @@ public abstract class AdaptedView<TDataToDisplay, TInputData> extends JPanel imp
 		}
 		
 		public void get(TInputData input) {
-			if(executor.tasksCount() > 3) {
-				D.w("executor already has tasks");
+			if(executor.tasksCount() > 0) {
+				//D.w("executor already has tasks");
 				return;
 				//executor.clearTasks();
 			}

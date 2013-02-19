@@ -3,10 +3,8 @@ package org.nilis.finances;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import org.nilis.utils.data.DataPair;
 
@@ -25,7 +23,7 @@ public class FinancialData {
 			this.symbol = symbol;
 			this.time = timeInSeconds;
 			this.bid = bid;
-			this.ask = bid;
+			this.ask = ask;
 		}
 		
 		public String toString() {
@@ -33,153 +31,6 @@ public class FinancialData {
 					"\n, " + new Date(time).toString() + " ("+time+")" +
 					"\n, " + bid +
 					"\n, " + ask +
-					"]";
-		}
-	}
-	
-	public static class PriceTicksBundle {
-		protected List<PriceTick> ticks = new LinkedList<PriceTick>();
-		protected Map<Long, List<PriceTick>> timedTicks = new HashMap<Long, List<PriceTick>>();
-		protected Map<Double, List<PriceTick>> pricedTicks = new HashMap<Double, List<PriceTick>>();
-		
-		protected Map<Long, DataPair<Double, Double>> timedPrices = new HashMap<Long, DataPair<Double, Double>>();
-		
-		protected long startTime = 0;
-		protected long period = 0;
-		public boolean completed;
-		
-		protected long firstTick = Long.MAX_VALUE;
-		protected long lastTick = Long.MIN_VALUE;
-		
-		protected double openPrice = 0;
-		public double getOpenPrice() {
-			return openPrice;
-		}
-
-		public double getClosePrice() {
-			return closePrice;
-		}
-		
-		public boolean bullish() {
-			return closePrice > openPrice;
-		}
-
-		protected double closePrice = 0;
-		
-		protected static <TKey> void addToMap(Map<TKey, List<PriceTick>> map, TKey key, PriceTick tick) {
-			if(!map.containsKey(key)) {
-				map.put(key, new LinkedList<PriceTick>());
-			}
-			map.get(key).add(tick);
-		}
-		
-		public PriceTicksBundle(long startTime, long period) {
-			this(startTime, period, true);
-		}
-		
-		public PriceTicksBundle(long startTime, long period, boolean completed) {
-			this.startTime = startTime;
-			this.period = period;
-			this.completed = completed;
-			resetCache();
-		}
-		
-		protected double maxPrice = 0;
-		protected double minPrice = Double.MAX_VALUE;
-		public long getStartTime() {
-			return startTime;
-		}
-
-		public long getPeriod() {
-			return period;
-		}
-
-		public double getMaxPrice() {
-			return maxPrice;
-		}
-
-		public double getMinPrice() {
-			return minPrice;
-		}
-
-		
-		protected void resetCache() {
-			
-		}
-
-		public long startTime() {
-			return startTime;
-		}
-		
-		public long period() {
-			return period;
-		}
-		
-		protected int maxTicksOfTheSamePrice = 0;
-		public int maxTicksOfTheSamePrice() {
-			return maxTicksOfTheSamePrice;
-		}
-		
-		protected void addToTimedPricesMap(PriceTick tick) {
-			if(!timedPrices.containsKey(tick.time)) {
-				timedPrices.put(tick.time, new DataPair<Double, Double>(Double.MAX_VALUE, Double.MIN_VALUE));
-			}
-			double min = timedPrices.get(tick.time).getTag();
-			double max = timedPrices.get(tick.time).getData();
-			timedPrices.get(tick.time).setTag(Math.min(min, tick.bid));
-			timedPrices.get(tick.time).setData(Math.max(max, tick.bid));
-		}
-		
-		public void addTick(PriceTick tick) {
-			maxPrice = Math.max(maxPrice, tick.bid);
-			minPrice = Math.min(minPrice, tick.bid);
-			if(tick.time < firstTick) {
-				openPrice = tick.bid;
-				firstTick = tick.time;
-			}
-			if(tick.time > lastTick) {
-				closePrice = tick.bid;
-				lastTick = tick.time;
-			}
-			ticks.add(tick);
-			addToMap(timedTicks, tick.time, tick);
-			addToMap(pricedTicks, tick.bid, tick);
-			addToTimedPricesMap(tick);
-			maxTicksOfTheSamePrice = Math.max(maxTicksOfTheSamePrice, countByPrice(tick.bid));
-		}
-		
-		public int countByPrice(double price) {
-			if(!pricedTicks.containsKey(price)) {
-				return 0;
-			}
-			return pricedTicks.get(price).size();
-		}
-		
-		public List<PriceTick> ticks() {
-			return ticks;
-		}
-		
-		public Set<Double> prices() {
-			return pricedTicks.keySet();
-		}
-		
-		public DataPair<Double, Double> priceRangeByTime(long time) {
-			return timedPrices.get(time);
-		}
-		
-		public Set<Long> times() {
-			return timedPrices.keySet();
-		}
-		
-		public boolean empty() {
-			return ticks == null || ticks.size() <= 0;
-		}
-		
-		public String toString() {
-			return "[PriceTicksBundle: "+
-					"\n, " + new Date(startTime).toString() + " ("+startTime+")" +
-					"\n, " + minPrice +
-					"\n, " + maxPrice +
 					"]";
 		}
 	}
@@ -209,13 +60,13 @@ public class FinancialData {
 		}
 	}
 
-	public static Map<Long, PriceGroupedTicksBundle> groupTicksByPeriods(long groupPeriod, List<BooksTick> ticks) {
-		Map<Long, PriceGroupedTicksBundle> ret = new HashMap<Long, PriceGroupedTicksBundle>();
+	public static Map<Long, BookTicksBundle> groupTicksByPeriods(long groupPeriod, List<BooksTick> ticks) {
+		Map<Long, BookTicksBundle> ret = new HashMap<Long, BookTicksBundle>();
 		if(ticks != null) {
 			for(BooksTick tick : ticks) {
 				long key = groupPeriod * (tick.time / groupPeriod);
 				if(!ret.containsKey(key)) {
-					ret.put(key, new PriceGroupedTicksBundle(key, groupPeriod, true));
+					ret.put(key, new BookTicksBundle(key, groupPeriod, true));
 				}
 				ret.get(key).addTick(tick);
 			}
@@ -223,8 +74,8 @@ public class FinancialData {
 		return ret;
 	}
 	
-	public static PriceGroupedTicksBundle packTicksIntoGroup(long startTime, long groupPeriod, List<BooksTick> ticks) {
-		PriceGroupedTicksBundle ret = new PriceGroupedTicksBundle(startTime, groupPeriod, true);
+	public static BookTicksBundle packTicksIntoGroup(long startTime, long groupPeriod, List<BooksTick> ticks) {
+		BookTicksBundle ret = new BookTicksBundle(startTime, groupPeriod, true);
 		if(ticks != null) {
 			for(BooksTick tick : ticks) {
 				ret.addTick(tick);
