@@ -1,5 +1,6 @@
 package org.nilis.finances;
 
+import java.nio.file.ClosedWatchServiceException;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -152,8 +153,20 @@ public class PriceTicksBundle {
 		return pricedTicks.keySet();
 	}
 	
-	public DataPair<Double, Double> priceRangeByTime(long time) {
+	public DataPair<Double, Double> bidRangeByTime(long time) {
 		return timedBidPrices.get(time);
+	}
+	
+	public double maxAskByTime(long time) {
+		return timedAskPrices.get(time).getData();
+	}
+	
+	public double minBidByTime(long time) {
+		return timedBidPrices.get(time).getTag();
+	}
+	
+	public double bidMovement() {
+		return closeBid - openBid;
 	}
 	
 	public Set<Long> times() {

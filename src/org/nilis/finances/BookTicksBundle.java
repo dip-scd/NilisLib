@@ -9,7 +9,7 @@ import java.util.Set;
 
 import org.nilis.data.utils.RuntimeDataStructuresUtils;
 import org.nilis.finances.FinancialData.BooksTick;
-import org.nilis.finances.FinancialData.PriceTick;
+import org.nilis.flow.Criteria;
 
 public class BookTicksBundle extends HashMap<Double, List<BooksTick>> {
 	private static final long serialVersionUID = -2190416372504052471L;
@@ -17,8 +17,12 @@ public class BookTicksBundle extends HashMap<Double, List<BooksTick>> {
 	protected long period = 0;
 	public boolean completed;
 	
-	protected Map<Long, List<BooksTick>> timedTicks = new HashMap<Long, List<BooksTick>>();
-	protected Map<Long, Map<Integer, BooksTick>> timedTicksStats = new HashMap<Long, Map<Integer, BooksTick>>();
+	protected Map<Long, BookTicksBundle> timedSubBundles = new HashMap<Long, BookTicksBundle>();
+	
+//	public static int MAX_PRICE_KEY = 0;
+//	public static int MIN_PRICE_KEY = 1;
+//	
+//	protected Map<Long, Map<Integer, BooksTick>> timedTicksStats = new HashMap<Long, Map<Integer, BooksTick>>();
 	protected List<BooksTick> ticks = new LinkedList<>();
 	
 	public BookTicksBundle(long startTime, long period) {
@@ -33,11 +37,11 @@ public class BookTicksBundle extends HashMap<Double, List<BooksTick>> {
 	}
 	
 	public Set<Long> times() {
-		return timedTicks.keySet();
+		return timedSubBundles.keySet();
 	}
 	
-	public List<BooksTick> ticksByTime(Long time) {
-		return timedTicks.get(time);
+	public BookTicksBundle subBundleByTime(Long time) {
+		return timedSubBundles.get(time);
 	}
 	
 	public List<BooksTick> ticks() {
@@ -62,7 +66,13 @@ public class BookTicksBundle extends HashMap<Double, List<BooksTick>> {
 			put(tick.price, new LinkedList<BooksTick>());
 		}
 		get(tick.price).add(tick);
-		RuntimeDataStructuresUtils.addToListMap(timedTicks, tick.time, tick);
+		
+		if(period > 1000) {
+			if(!timedSubBundles.containsKey(tick.time)) {
+				timedSubBundles.put(tick.time, new BookTicksBundle(tick.time, 1000));
+			}
+			timedSubBundles.get(tick.time).addTick(tick);
+		}
 		ticks.add(tick);
 		maxTickVolume = Math.max(maxTickVolume, tick.volume);
 		resetCache();
@@ -303,30 +313,6 @@ public class BookTicksBundle extends HashMap<Double, List<BooksTick>> {
 		return ret;
 	}
 	
-	public BookTicksBundle getBreathGroup() {
-		BookTicksBundle ret = new BookTicksBundle(startTime, period);
-		List<BooksTick> currTicksList;
-		long thresoldTime = (long) (startTime + period*0.75);
-		int dir = 0;
-		for(double price : keySet()) {
-			currTicksList = get(price);
-			for(BooksTick tick : currTicksList) {
-				double multipier = 1.0;
-				if(tick.time < thresoldTime) {
-					dir = -tick.direction;
-				} else {
-					multipier = 3.0;
-					dir = tick.direction;
-				}
-				ret.addTick(new BooksTick(tick.symbol,
-						tick.time, 
-						tick.price,
-						tick.volume*multipier,
-						dir));
-			}
-		}
-		return ret;
-	}
 	
 	public String toString() {
 		String ret = "[PriceGroupedTicksBundle "+new Date(startTime)+"\n";
