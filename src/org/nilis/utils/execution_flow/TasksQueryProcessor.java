@@ -91,7 +91,7 @@ public class TasksQueryProcessor<TTask extends TaskWithListeners<TTaskResult>, T
 				tasks.add(taskWrapper);
 				executor.submit(task);
 			} else {
-				D.i("task already in query");
+				//D.i("task already in query");
 			}
 		}
 	}

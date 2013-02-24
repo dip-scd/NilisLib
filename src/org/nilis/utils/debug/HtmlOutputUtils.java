@@ -1,5 +1,6 @@
 package org.nilis.utils.debug;
 
+import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.LinkedHashMap;
@@ -221,5 +222,15 @@ public class HtmlOutputUtils {
 	
 	public static String coloredSpan(String input, String color) {
 		return "<span style=\" color: "+color+";\" >"+input+"</span>";
+	}
+	
+	protected static DecimalFormat numberFormat = new DecimalFormat("#.####");
+	public static String viewOfNumber(double input) {
+		if(input > 0) {
+			return HtmlOutputUtils.coloredSpan(numberFormat.format(input), "#11ff11");
+		} else if(input < 0) {
+			return HtmlOutputUtils.coloredSpan(numberFormat.format(input), "#ff2222");
+		}
+		return HtmlOutputUtils.coloredSpan(numberFormat.format(input), "#aaaaaa");
 	}
 }
