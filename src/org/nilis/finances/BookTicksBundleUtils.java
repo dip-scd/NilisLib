@@ -19,6 +19,13 @@ public class BookTicksBundleUtils {
 		return getGroupFilteredByCriteria(booksGroup, new OutsidePriceGroupCriteria(borderArea, pricesGroup));
 	}
 	
+	public static BookTicksBundle getGroupWithPricesInvertedPricesGroup(
+			BookTicksBundle booksGroup,
+			PriceTicksBundle pricesGroup,
+			double borderArea) {
+		return getGroupFilteredByCriteria(booksGroup, new InvertedPriceGroupCriteria(borderArea, pricesGroup));
+	}
+	
 	protected static abstract class PricesGroupBasedCriteria implements Criteria<BooksTick> {
 		protected double priceBorderArea = 0;
 		protected PriceTicksBundle pricesGroup =  null;
@@ -68,6 +75,31 @@ public class BookTicksBundleUtils {
 			double maxPrice = pricesGroup.maxAskByTime(tick.time)+priceBorderArea;
 
 			if(tick.price <= maxPrice && tick.price >= minPrice) {
+				return true;
+			}
+			return false;
+		}
+	}
+	
+	public static class InvertedPriceGroupCriteria extends PricesGroupBasedCriteria {
+		public InvertedPriceGroupCriteria(double priceBorderArea,
+				PriceTicksBundle pricesGroup) {
+			super(priceBorderArea, pricesGroup);
+		}
+
+		@Override
+		public boolean valid(BooksTick tick) {
+			if(pricesGroup.bidRangeByTime(tick.time) == null) {
+				return false;
+			}
+			double minPrice = pricesGroup.minBidByTime(tick.time)-priceBorderArea;
+			double maxPrice = pricesGroup.maxAskByTime(tick.time)+priceBorderArea;
+
+			if(tick.price <= maxPrice && tick.direction > 0) {
+				return true;
+			}
+			
+			if(tick.price >= minPrice && tick.direction < 0) {
 				return true;
 			}
 			return false;
