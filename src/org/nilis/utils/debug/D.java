@@ -271,7 +271,7 @@ public class D {
 		}
 	};
 
-	private static int CALLER_POINT_STACK_TRACE_ELEMENT_NUMBER = 4;
+	private static int CALLER_POINT_STACK_TRACE_ELEMENT_NUMBER = 3;
 	private static void log(final int type, String message) {
 		if (!debug) {
 			return;

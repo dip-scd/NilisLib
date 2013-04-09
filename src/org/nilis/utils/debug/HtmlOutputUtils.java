@@ -231,6 +231,6 @@ public class HtmlOutputUtils {
 		} else if(input < 0) {
 			return HtmlOutputUtils.coloredSpan(numberFormat.format(input), "#ff2222");
 		}
-		return HtmlOutputUtils.coloredSpan(numberFormat.format(input), "#aaaaaa");
+		return HtmlOutputUtils.coloredSpan("0", "#aaaaaa");
 	}
 }
