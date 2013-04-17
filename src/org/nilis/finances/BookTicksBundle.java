@@ -1,5 +1,8 @@
 package org.nilis.finances;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -7,9 +10,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.nilis.data.utils.RuntimeDataStructuresUtils;
 import org.nilis.finances.FinancialData.BooksTick;
-import org.nilis.flow.Criteria;
+import org.nilis.utils.debug.D;
 
 public class BookTicksBundle extends HashMap<Double, List<BooksTick>> {
 	private static final long serialVersionUID = -2190416372504052471L;
@@ -19,7 +21,7 @@ public class BookTicksBundle extends HashMap<Double, List<BooksTick>> {
 	
 	protected Map<Long, BookTicksBundle> timedSubBundles = new HashMap<Long, BookTicksBundle>();
 	
-//	public static int MAX_PRICE_KEY = 0;
+//	public static int MAX_PRICE_KEY = 0;O
 //	public static int MIN_PRICE_KEY = 1;
 //	
 //	protected Map<Long, Map<Integer, BooksTick>> timedTicksStats = new HashMap<Long, Map<Integer, BooksTick>>();
@@ -277,6 +279,76 @@ public class BookTicksBundle extends HashMap<Double, List<BooksTick>> {
 			}
 		}
 		return ret > 0 ? 1 : -1;
+	}
+	
+	public double volumesDeltaFromPrice(double price) {
+		double ret = 0;
+		double buyVolume = 0;
+		double sellVolume = 0;
+		for(double existingPrice : keySet()) {
+			if(existingPrice >= price && reducedDirectionByPrice(existingPrice) == -1) {
+				sellVolume += sellVolumeByPrice(existingPrice);
+			} else if(existingPrice < price && reducedDirectionByPrice(existingPrice) == 1) {
+				buyVolume += buyVolumeByPrice(existingPrice);
+			}
+		}
+		ret = - sellVolume + buyVolume;
+		return ret;
+	}
+	
+	protected static Comparator<Double> negativeComparator = new Comparator<Double>() {
+		@Override
+		public int compare(Double o1, Double o2) {
+			return (int) Math.signum(o1 - o2);
+		}
+	};
+	
+	protected static Comparator<Double> positiveComparator = new Comparator<Double>() {
+		@Override
+		public int compare(Double o1, Double o2) {
+			return (int) Math.signum(o2 - o1);
+		}
+	};
+	
+	public List<Double> availablePricesByDirection(final int direction) {
+		LinkedList<Double> ret = new LinkedList<Double>();
+		for(double price : keySet()) {
+			if(reducedDirectionByPrice(price) == (-direction)) {
+				ret.add(price);
+			}
+		}
+		Collections.sort(ret, direction < 0 ? positiveComparator : negativeComparator);
+		return ret;
+	}
+	
+	public double movementWouldBeCausedByVolume(double volume, int direction) {
+		double currentPrice = 0;
+		double start = 0;
+		double unusedVolume = volume;
+		List<Double> prices = availablePricesByDirection(direction);
+		if(prices.size() > 0) {
+			start = prices.get(0);
+		}
+		for(double price : prices) {
+			currentPrice = price;
+			unusedVolume -= reducedVolumeByPrice(price);
+			if(unusedVolume <= 0) {
+				break;
+			}
+		}
+		return currentPrice - start;
+	}
+	
+	public double potentialMovementDisbalance(double volume) {
+		return 
+				movementWouldBeCausedByVolume(volume, 1) - 
+				movementWouldBeCausedByVolume(volume, -1);
+	}
+	
+	public double potentialPartialMovementDisbalance(double part) {
+		return 
+				movementWouldBeCausedByVolume(fullVolume()*part, 1) - 
+				movementWouldBeCausedByVolume(fullVolume()*part, -1);
 	}
 	
 	@SuppressWarnings("unused")
