@@ -322,6 +322,7 @@ public class BookTicksBundle extends HashMap<Double, List<BooksTick>> {
 	}
 	
 	public double movementWouldBeCausedByVolume(double volume, int direction) {
+		double ret = 0;
 		double currentPrice = 0;
 		double start = 0;
 		double unusedVolume = volume;
@@ -335,20 +336,32 @@ public class BookTicksBundle extends HashMap<Double, List<BooksTick>> {
 			if(unusedVolume <= 0) {
 				break;
 			}
+			//ret+=1;
 		}
-		return currentPrice - start;
+		ret = currentPrice - start;
+		return ret;
 	}
 	
 	public double potentialMovementDisbalance(double volume) {
-		return 
-				movementWouldBeCausedByVolume(volume, 1) - 
+		return  movementWouldBeCausedByVolume(volume, 1)+ 
 				movementWouldBeCausedByVolume(volume, -1);
 	}
 	
 	public double potentialPartialMovementDisbalance(double part) {
-		return 
-				movementWouldBeCausedByVolume(fullVolume()*part, 1) - 
-				movementWouldBeCausedByVolume(fullVolume()*part, -1);
+		return potentialMovementDisbalance(fullVolume()*part);
+	}
+	
+	public double potentialMultiMovementDisbalance(Set<Double> parts) {
+		double ret = 0;
+		//double partsMultipier = 0;
+		for(double part : parts) {
+			if(part > 0) {
+				//double currentMultipier = (1.0/part);
+				//partsMultipier += (currentMultipier);
+				ret += potentialPartialMovementDisbalance(part);// * currentMultipier;						
+			}
+		}
+		return ret;
 	}
 	
 	@SuppressWarnings("unused")
