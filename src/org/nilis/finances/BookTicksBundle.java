@@ -25,7 +25,7 @@ public class BookTicksBundle extends HashMap<Double, List<BooksTick>> {
 //	public static int MIN_PRICE_KEY = 1;
 //	
 //	protected Map<Long, Map<Integer, BooksTick>> timedTicksStats = new HashMap<Long, Map<Integer, BooksTick>>();
-	protected List<BooksTick> ticks = new LinkedList<>();
+	protected List<BooksTick> ticks = new LinkedList<BooksTick>();
 	
 	public BookTicksBundle(long startTime, long period) {
 		this(startTime, period, true);
@@ -50,6 +50,10 @@ public class BookTicksBundle extends HashMap<Double, List<BooksTick>> {
 		return ticks;
 	}
 	
+	public void clear() {
+		ticks.clear();
+	}
+	
 	public long startTime() {
 		return startTime;
 	}
@@ -61,6 +65,12 @@ public class BookTicksBundle extends HashMap<Double, List<BooksTick>> {
 	protected double maxTickVolume = 0;
 	public double maxTickVolume() {
 		return maxTickVolume;
+	}
+	
+	public void addTicks(List<BooksTick> ticks) {
+		for(BooksTick tick : ticks) {
+			addTick(tick);
+		}
 	}
 	
 	public void addTick(BooksTick tick) {

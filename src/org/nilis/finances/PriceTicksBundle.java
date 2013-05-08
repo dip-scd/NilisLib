@@ -9,6 +9,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.nilis.data.utils.RuntimeDataStructuresUtils;
+import org.nilis.finances.FinancialData.BooksTick;
 import org.nilis.finances.FinancialData.PriceTick;
 import org.nilis.utils.data.DataPair;
 
@@ -115,6 +116,12 @@ public class PriceTicksBundle {
 		timedAskPrices.get(tick.time).setData(Math.max(max, tick.ask));
 	}
 	
+	public void addTicks(List<PriceTick> ticks) {
+		for(PriceTick tick : ticks) {
+			addTick(tick);
+		}
+	}
+	
 	public void addTick(PriceTick tick) {
 		maxBid = Math.max(maxBid, tick.bid);
 		minBid = Math.min(minBid, tick.bid);
@@ -147,6 +154,15 @@ public class PriceTicksBundle {
 	
 	public List<PriceTick> ticks() {
 		return ticks;
+	}
+	
+	public void clear() {
+		ticks.clear();
+		pricedTicks.clear();
+		timedTicks.clear();
+		timedBidPrices.clear();
+		timedAskPrices.clear();
+		resetCache();
 	}
 	
 	public Set<Double> prices() {
@@ -182,6 +198,7 @@ public class PriceTicksBundle {
 				"\n, " + new Date(startTime).toString() + " ("+startTime+")" +
 				"\n, " + minBid +
 				"\n, " + maxBid +
+				"\nticks count: " + ticks.size() +
 				"]";
 	}
 }

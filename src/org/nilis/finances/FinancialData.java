@@ -19,6 +19,13 @@ public class FinancialData {
 		public double bid;
 		public double ask;
 		
+		public PriceTick(PriceTick tick) {
+			this.symbol = tick.symbol;
+			this.time = tick.time;
+			this.bid = tick.bid;
+			this.ask = tick.ask;
+		}
+		
 		public PriceTick(String symbol, long timeInSeconds, double ask, double bid) {
 			this.symbol = symbol;
 			this.time = timeInSeconds;
