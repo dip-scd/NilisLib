@@ -130,7 +130,7 @@ public class Bar extends PriceTick{
 			}
 			boolean negativeDetected = false;
 			boolean positiveDetected = false;
-			boolean opposingDetected = true;//negativeDetected && positiveDetected;
+			boolean opposingDetected = negativeDetected && positiveDetected;
 			//boolean hasZeroes = false;
 			while(!(children.size() <= 2 || childrenFormZigZag() || childrenConsolidatedByDirection())) {
 				//hasZeroes = false;
@@ -164,7 +164,15 @@ public class Bar extends PriceTick{
 			endBar = children.get(children.size()-1);
 		}
 		calculateDirection();
+		
+		if(!isTick() && direction() != 0 && openBid() != 0 && closeBid() != 0) {
+			levels.add(new Level(closeBid(), duration(), direction(), closingTime()));
+		}
 		//printChildren();
+	}
+	
+	public long duration() {
+		return closingTime() - openTime();
 	}
 
 	protected void groupSameDirectionBars(int fullTicksSize) {
@@ -281,6 +289,43 @@ public class Bar extends PriceTick{
 		} for(int i=zigzagCapableSize; i<bars.size(); i++) {
 			children.add(bars.get(i));
 		}
+	}
+	
+	public static class Level {
+		protected double price;
+		protected double power;
+		protected int direction;
+		protected long timeAppeared;
+		public Level(double price, double power, int direction, long timeAppeared) {
+			this.price = price;
+			this.power = power;
+			this.direction = direction;
+			this.timeAppeared = timeAppeared;
+		}
+		
+		public double price() {
+			return price;
+		}
+		public double power() {
+			return power;
+		}
+		
+		public int direction() {
+			return direction;
+		}
+		
+		public long timeAppeared() {
+			return timeAppeared;
+		}
+	}
+	
+	protected List<Level> levels = new ArrayList<Level>();
+	public List<Level> levels() {
+		List<Level> ret = new ArrayList<>(levels);
+		for(Bar child : children) {
+			ret.addAll(child.levels());
+		}
+		return ret;
 	}
 	
 	public void printChildren() {
