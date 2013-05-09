@@ -16,6 +16,11 @@ public class Bar extends PriceTick{
 		return isTick;
 	}
 	
+	protected boolean isAtomicDelta = false;
+	public boolean isAtomicDelta() {
+		return isAtomicDelta;
+	}
+	
 	protected int direction = 0;
 	public int direction() {
 		return direction;
@@ -43,6 +48,7 @@ public class Bar extends PriceTick{
 		endBar = second;
 		children.add(first);
 		children.add(second);
+		isAtomicDelta = true;
 		calculateDirection();
 	}
 
@@ -96,6 +102,8 @@ public class Bar extends PriceTick{
 			if(bars.size() > 0) {
 				earliestBar = bars.get(0);
 			}
+		} else {
+			
 		}
 		return earliestBar;
 	}
@@ -324,6 +332,59 @@ public class Bar extends PriceTick{
 		List<Level> ret = new ArrayList<>(levels);
 		for(Bar child : children) {
 			ret.addAll(child.levels());
+		}
+		return ret;
+	}
+	
+	public List<Level> levelsActualAtTime(long time) {
+		List<Level> ret = new LinkedList<>();
+		List<Level> preRet = levels();
+		List<Bar> atomicDeltas = atomicDeltas(time);
+		for(Level level : preRet) {
+			if(level.timeAppeared() < time) {
+				if(!levelNeutralizedByMovement(level, atomicDeltas)) {
+					ret.add(level);
+				}
+			}
+		}
+		return ret;
+	}
+	
+	public List<Level> levelsActualAtClose() {
+		return levelsActualAtTime(closingTime());
+	}
+	
+	public boolean levelNeutralizedByMovement(Level level, List<Bar> barsToCheck) {
+		double minPrice = 0;
+		double maxPrice = 0;
+		for(Bar bar : barsToCheck) {
+			if(bar.openTime() > level.timeAppeared()
+					//|| (bar.openTime() == level.timeAppeared() && closeBid() == level.price())
+					) {
+				minPrice = Math.min(bar.openBid(), bar.closeBid());
+				maxPrice = Math.max(bar.openBid(), bar.closeBid());
+				if(level.price() >= minPrice && level.price() <= maxPrice) {
+					return true;
+				}
+				if(level.direction == 1 && minPrice > level.price()) {
+					return true;
+				}
+				if(level.direction == -1 && maxPrice < level.price()) {
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+	
+	public List<Bar> atomicDeltas(long maxTime) {
+		List<Bar> ret = new LinkedList<>();
+		if(isAtomicDelta() && closingTime() <= maxTime) {
+			ret.add(this);
+			return ret;
+		}
+		for(Bar child : children) {
+			ret.addAll(child.atomicDeltas(maxTime));
 		}
 		return ret;
 	}
