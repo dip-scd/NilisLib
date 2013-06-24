@@ -1,6 +1,5 @@
 package org.nilis.finances;
 
-import java.nio.file.ClosedWatchServiceException;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedList;

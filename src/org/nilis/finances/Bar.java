@@ -329,7 +329,7 @@ public class Bar extends PriceTick{
 	
 	protected List<Level> levels = new ArrayList<Level>();
 	public List<Level> levels() {
-		List<Level> ret = new ArrayList<>(levels);
+		List<Level> ret = new ArrayList<Level>(levels);
 		for(Bar child : children) {
 			ret.addAll(child.levels());
 		}
@@ -337,7 +337,7 @@ public class Bar extends PriceTick{
 	}
 	
 	public List<Level> levelsActualAtTime(long time) {
-		List<Level> ret = new LinkedList<>();
+		List<Level> ret = new LinkedList<Level>();
 		List<Level> preRet = levels();
 		List<Bar> atomicDeltas = atomicDeltas(time);
 		for(Level level : preRet) {
@@ -378,7 +378,7 @@ public class Bar extends PriceTick{
 	}
 	
 	public List<Bar> atomicDeltas(long maxTime) {
-		List<Bar> ret = new LinkedList<>();
+		List<Bar> ret = new LinkedList<Bar>();
 		if(isAtomicDelta() && closingTime() <= maxTime) {
 			ret.add(this);
 			return ret;
